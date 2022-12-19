@@ -5,7 +5,7 @@ from talon import Context, Module, actions, clip
 
 # sys.path.append(os.path.expanduser('~')+"/.talon/user")
 # from shared_resources import getBasicModule, getBasicContext
-# from core.keys.keys import modifier_keys, numbers
+# from core.basics.basics import modifier_keys, numbers
 
 mod= Module()
 ctx =Context()

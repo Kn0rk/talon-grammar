@@ -162,15 +162,8 @@ class Actions:
             clip.set(old_clip)
             global extendCommands
             extendCommands = []
-    def goto_next(text: str, num: int):
-        """find next occurance of text and place cursor to the left"""
-        print("glob")
-        pass
 
-    def goto_prev(text: str, num: int):
-        """find next occurance of text and place cursor to the left"""
-        print("glob")
-        pass
+
 
 
 ctx.matches = r"""
@@ -204,10 +197,6 @@ class CodeActions:
 class EditActions:
     # talon edit actions
 
-
-
-
-
     def jump_line(n: int):
         actions.user.idea(f"goto {n} 0")
         # move the cursor to the first nonwhite space character of the line
@@ -234,28 +223,38 @@ class WinActions:
 @ctx.action_class("user")
 class UserActions:
 
+    def goto_next_character(text: str = "", num: int = 1):
+        actions.user.goto_next(text ,num)
+
     def goto_next(text: str = "", num: int = 1):
-        actions.key("ctrl-right")
-        actions.key("right")
+        # actions.key("ctrl-right")
         actions.key("ctrl-f")
-        time.sleep(0.2)
+        time.sleep(0.35)
         actions.key(" ".join(text))
         time.sleep(0.2)
-        if len(text)==1:
-            num+=1
-        for i in range(num-1):
+        actions.key("enter")
+        actions.key("escape")
+        # if len(text) == 1:
+        #     num += 1
+        for i in range(num - 1):
             actions.key("f3")
         actions.key("escape")
         # action(paste_match_style):
 
+    def goto_prev_character(text: str = "", num: int = 1):
+        actions.user.goto_prev(text, num)
+
     def goto_prev(text: str = "", num: int = 1):
-        actions.key("ctrl-left")
+        # actions.key("ctrl-left")
         actions.key("ctrl-f")
-        time.sleep(0.2)
+        time.sleep(0.35)
         actions.key(" ".join(text))
         time.sleep(0.2)
+        actions.key("enter")
 
-        for i in range(num):
+        actions.key("escape")
+
+        for i in range(num + 1):
             actions.key("shift-f3")
         actions.key("escape")
 
@@ -275,20 +274,6 @@ class UserActions:
         else:
             actions.user.idea(f"range {line_start} {line_end}")
 
-    def extend_camel_left():
-        actions.user.idea("action EditorPreviousWordInDifferentHumpsModeWithSelection")
-
-    def extend_camel_right():
-        actions.user.idea("action EditorNextWordInDifferentHumpsModeWithSelection")
-
-    def camel_left():
-        actions.user.idea("action EditorPreviousWordInDifferentHumpsMode")
-
-    def camel_right():
-        actions.user.idea("action EditorNextWordInDifferentHumpsMode")
-
-    def line_clone(line: int):
-        actions.user.idea(f"clone {line}")
 
     # # multi-cursor tag functions
     # def multi_cursor_enable():
@@ -319,6 +304,7 @@ class UserActions:
     # splits tag functions
     def split_window_right():
         actions.user.idea("action OpenInRightSplit")
+
     # def split_window_left():
     # def split_window_down():
     # def split_window_up():

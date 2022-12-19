@@ -2,31 +2,9 @@
 os: linux
 tag: user.i3wm
 -
-port <number_small>:
-    user.system_command("i3-msg workspace number {number_small}")
-port ten: user.system_command("i3-msg workspace number 10")
 
 
-( window) left [<number_small>]:
-    number=number_small or 1
-    number=number - 1
-    user.system_command("i3-msg focus left")
-    repeat(number)
-( window) right [<number_small>]:
-    number=number_small or 1
-    number=number - 1
-    user.system_command("i3-msg focus right")
-    repeat(number)
-( window) up [<number_small>]:
-    number=number_small or 1
-    number=number - 1
-    user.system_command("i3-msg focus up")
-    repeat(number)
-( window) down [<number_small>]:
-    user.system_conumber=number_small or 1
-    number=number - 1
-    user.system_command("i3-msg focus down")
-    repeat(number)
+
 (( window) kill | murder): user.system_command("i3-msg kill")
 ( window) stacking: user.system_command("i3-msg layout stacking")
 ( window) default: user.system_command("i3-msg layout toggle split")
@@ -37,7 +15,7 @@ restart i three: user.system_command("i3-msg restart")
 
 (full screen | scuba): user.system_command("i3-msg fullscreen")
 toggle floating: user.system_command("i3-msg floating toggle")
-focus floating: user.system_command("i3-msg focus mode_toggle")
+
 center window: user.system_command("i3-msg move position center")
 resize mode: user.system_command('i3-msg mode "resize"')
 focus parent: user.system_command("i3-msg focus parent")

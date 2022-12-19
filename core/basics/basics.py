@@ -1,11 +1,10 @@
 import os.path
 import sys
 from talon import Context, Module, actions, app
-sys.path.append(os.path.expanduser('~')+"/.talon/user")
-from shared_resources import getBasicModule, getBasicContext
 
-mod= getBasicModule()
-ctx =getBasicContext()
+
+mod= Module()
+ctx =Context()
 
 '''
 Alphabet
@@ -21,47 +20,36 @@ ctx.lists["self.letter"] = alphabet
 '''
 Digits
 '''
-default_digits = "zero one two three four five six seven eight nine".split(" ")
-numbers = [str(i) for i in range(10)]
+default_digits = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split(" ")
+numbers = [str(i) for i in range(20)]
 ctx.lists["self.number_key"] = dict(zip(default_digits, numbers))
-mod.list("number_key", desc="All number keys")
+mod.list("number_key", desc="All number basics")
 
 '''
-Function keys
+Function basics
 '''
 default_f_digits = (
     "one two three four five six seven eight nine ten eleven twelve".split(" ")
 )
-mod.list("function_key", desc="All function keys")
+mod.list("function_key", desc="All function basics")
 ctx.lists["self.function_key"] = {
     f"function {default_f_digits[i]}": f"f{i + 1}" for i in range(12)
 }
 
 
 '''
-Modifier keys
+Modifier basics
 '''
 modifier_keys = {
     "alt": "alt",
     "control": "ctrl",
     "shift": "shift",
+    "window": "super",
     "windows": "super",
+    #"win": "super",
 }
-mod.list("modifier_key", desc="All modifier keys")
+mod.list("modifier_key", desc="All modifier basics")
 ctx.lists["self.modifier_key"] = modifier_keys
-
-punctuation_words = {
-    # TODO: I'm not sure why we need these, I think it has something to do with
-    # Dragon. Possibly it has been fixed by later improvements to talon? -rntz
-    "`": "`",
-    ",": ",",  # <== these things
-
-    # Currencies
-    "dollar sign": "$",
-    "pound sign": "£",
-}
-mod.list("punctuation", desc="words for inserting punctuation into text")
-ctx.lists["self.punctuation"] = punctuation_words
 
 symbol_key_words = {
     "back tick": "`",
@@ -138,23 +126,14 @@ symbol_key_words = {
     # Currencies
     "dollar": "$",
     "pound": "£",
+    "act": "escape",
+    "space": "space",
+    "insert": "insert",
 }
 mod.list("symbol_key", desc="All symbols from the keyboard")
 ctx.lists["self.symbol_key"] = symbol_key_words
 
-
-special_keys = {
-    "act":"escape",
-    #"ace":"space",
-    "space":"space",
-    "ending":"end",
-    "insert": "insert",
-
-}
-mod.list("special_key", desc="All symbols from the keyboard")
-ctx.lists["self.special_key"] = special_keys
-
-
+mod.list("movement", desc="All movement basics")
 ctx.lists["self.movement"] = {
     "down": "down",
     "left": "left",
@@ -162,32 +141,15 @@ ctx.lists["self.movement"] = {
     "up": "up",
     "ending":"end",
     "home":"home",
-    "west":"ctrl-left",
-    "east":"ctrl-right",
-    "page up": "pageup",
-    "page down": "pagedown",
-}
-
-mod.list("movement", desc="All movement keys")
-ctx.lists["self.movement"] = {
-    "down": "down",
-    "left": "left",
-    "right": "right",
-    "up": "up",
-    "ending":"end",
-    "home":"home",
-    "west":"ctrl-left",
-    "east":"ctrl-right",
     "page up": "pageup",
     "page down": "pagedown",
     "wipe": "backspace",
     "slap": "enter",
     "tabby": "tab",
-    # 'junk': 'backspace',
     "delete": "delete",
 }
 
-mod.list("compound_movement", desc="All movement keys")
+mod.list("compound_movement", desc="All movement basics")
 ctx.lists["self.compound_movement"] = {
     "east": "ctrl-right",
     "west": "ctrl-left",
@@ -195,43 +157,23 @@ ctx.lists["self.compound_movement"] = {
     "pimp": "ctrl-backspace",
 
 }
-
 @mod.capture(rule="{self.modifier_key}+")
 def modifiers(m) -> str:
     "One or more modifier keys"
     return "-".join(m.modifier_key_list)
-
-
-@mod.capture(rule="( {self.movement} | {self.compound_movement} )")
+@mod.capture(rule="( {self.movement} | {self.compound_movement} | {self.letter})")
 def movement(m) -> str:
     "One directional arrow key"
     return m[0]
 
-@mod.capture(rule="( <self.movement> [<self.number_key>])+")
-def movements(m) -> str:
-    "One or more arrow keys separated by a space"
-    keys=str(m).split()
-    key_list=[]
-    for key in keys:
-        if key in numbers:
-            num=int(key)-1
-            if num >1:
-                key_list.extend([key_list[-1] for i in range(num)])
-        else:
-            key_list.append(key)
-    return " ".join(key_list)
-
-
-
-@mod.capture(rule="[ <self.modifiers>+ ] (<self.movement> [<self.number_key>] )+")
+@mod.capture(rule="[ {self.modifier_key}+ ] (<self.movement> [<self.number_key>] )+")
 def modified_movements(m) -> str:
-    "One or more arrow keys separated by a space"
+    "One or more arrow basics separated by a space"
     keys=str(m).split()
     mods=None
     key_list=[]
     for key in keys:
-
-        if key in modifier_keys:
+        if key in modifier_keys.values():
             mods=mods+"-"+key if mods else key
         elif key in numbers:
             num=int(key)
@@ -241,7 +183,8 @@ def modified_movements(m) -> str:
                 key_list.append(mods+"-"+key)
             else:
                 key_list.append(key)
-    return " ".join(key_list)
+    result=" ".join(key_list)
+    return result
 
 @mod.capture(rule="{self.number_key}")
 def number_key(m) -> str:
@@ -254,12 +197,10 @@ def letter(m) -> str:
     "One letter key"
     return m.letter
 
-
-@mod.capture(rule="{self.special_key}")
-def special_key(m) -> str:
-    "One special key"
-    return m.special_key
-
+@mod.capture(rule="{self.letter}+")
+def letters(m) -> str:
+    "Multiple letter keys"
+    return "".join(m.letter_list)
 
 @mod.capture(rule="{self.symbol_key}")
 def symbol_key(m) -> str:
@@ -281,39 +222,9 @@ def any_alphanumeric_key(m) -> str:
 
 @mod.capture(
     rule="( <self.letter> | <self.number_key> | <self.symbol_key> "
-    "| <self.movement> | <self.function_key> | <self.special_key> )"
+    "| <self.movement> | <self.function_key>  )"
 )
 def unmodified_key(m) -> str:
     "A single key with no modifiers"
     return str(m)
 
-
-@mod.capture(rule="{self.modifier_key} <self.unmodified_key>+")
-def key(m) -> str:
-    "multi key with  modifiers"
-    try:
-        mods = m.modifier_key_list
-    except AttributeError:
-        mods = []
-    return "-".join([mods + k for k in m.unmodified_key_list])
-
-@mod.capture(rule="{self.modifier_key}* <self.unmodified_key>")
-def key(m) -> str:
-    "A single key with optional modifiers"
-    try:
-        mods = m.modifier_key_list
-    except AttributeError:
-        mods = []
-    return "-".join(mods + [m.unmodified_key])
-
-
-@mod.capture(rule="<self.key>+")
-def keys(m) -> str:
-    "A sequence of one or more keys with optional modifiers"
-    return " ".join(m.key_list)
-
-
-@mod.capture(rule="{self.letter}+")
-def letters(m) -> str:
-    "Multiple letter keys"
-    return "".join(m.letter_list)

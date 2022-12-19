@@ -5,14 +5,8 @@ tag(): user.line_commands
 #tag(): user.multiple_cursors
 tag(): user.splits
 tag(): user.tabs
+tag(): user.find_and_replace
 # multiple_cursors.py support end
-
-next <user.any_alphanumeric_key> [<user.number_small>]: user.goto_next(any_alphanumeric_key,number_small or 1)
-next <user.text> [<number_small>]: user.goto_next(text,number_small or 1)
-last <user.any_alphanumeric_key> [<user.number_small>]: user.goto_prev(any_alphanumeric_key,number_small or 1)
-last <user.text> [<number_small>]: user.goto_prev(text,number_small or 1)
-method down: user.idea("action MethodDown")
-method up: user.idea("action MethodUp")
 
 # Auto complete
 complete: user.idea("action CodeCompletion")
@@ -20,7 +14,7 @@ perfect: user.idea("action CodeCompletion,action CodeCompletion")
 smart: user.idea("action SmartTypeCompletion")
 finish: user.idea("action EditorCompleteStatement")
 comment: key("ctrl-keypad_divide")
-shift paste: key('ctrl-shift-v')
+(shift paste|paste more): key('ctrl-shift-v')
 
 
 
@@ -222,10 +216,6 @@ fix last (error | air):
 select less: user.idea("action EditorUnSelectWord")
 select (more | this): user.idea("action EditorSelectWord")
 
-select camel left: user.extend_camel_left()
-select camel right: user.extend_camel_right()
-go camel left: user.camel_left()
-go camel right: user.camel_right()
 
 # requires plug-in: black-pycharm
 blacken: user.idea("action BLACKReformatCode")

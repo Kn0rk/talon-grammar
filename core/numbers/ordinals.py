@@ -2,11 +2,10 @@ from talon import Context, Module
 
 import sys, os
 
-sys.path.append(os.path.expanduser('~')+"/.talon/user")
-from shared_resources import getBasicModule, getBasicContext
 
-mod= getBasicModule()
-ctx =getBasicContext()
+mod= Module()
+ctx =Context()
+
 
 
 def ordinal(n):

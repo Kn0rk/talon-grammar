@@ -4,11 +4,10 @@ import sys, os
 
 from talon import Context, Module
 
-sys.path.append(os.path.expanduser('~')+"/.talon/user")
-from shared_resources import getBasicModule, getBasicContext
 
-mod= getBasicModule()
-ctx =getBasicContext()
+mod= Module()
+ctx =Context()
+
 
 digit_list = "zero one two three four five six seven eight nine".split()
 teens = "ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split()

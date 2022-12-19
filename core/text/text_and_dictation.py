@@ -81,7 +81,7 @@ def text(m) -> str:
 
 
 @mod.capture(
-    rule="({user.vocabulary} | {user.punctuation} | {user.prose_snippets} | <phrase> | <user.prose_number> | <user.prose_modifier>)+"
+    rule="({user.vocabulary} | {user.prose_snippets} | <phrase> | <user.prose_number> | <user.prose_modifier>)+"
 )
 def prose(m) -> str:
     """Mixed words and punctuation, auto-spaced & capitalized."""
@@ -90,7 +90,7 @@ def prose(m) -> str:
 
 
 @mod.capture(
-    rule="({user.vocabulary} | {user.punctuation} | {user.prose_snippets} | <phrase> | <user.prose_number>)+"
+    rule="({user.vocabulary} | {user.prose_snippets} | <phrase> | <user.prose_number>)+"
 )
 def raw_prose(m) -> str:
     """Mixed words and punctuation, auto-spaced & capitalized, without quote straightening and commands (for use in dictation mode)."""
