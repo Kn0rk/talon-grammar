@@ -1,7 +1,5 @@
 from typing import Iterator, Union
 import sys, os
-
-
 from talon import Context, Module
 
 
@@ -217,3 +215,4 @@ def number_signed(m):
 @ctx.capture("number_small", rule="{user.number_small}")
 def number_small(m) -> int:
     return number_small_map[m.number_small]
+

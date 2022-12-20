@@ -157,6 +157,7 @@ ctx.lists["self.compound_movement"] = {
     "pimp": "ctrl-backspace",
 
 }
+
 @mod.capture(rule="{self.modifier_key}+")
 def modifiers(m) -> str:
     "One or more modifier keys"
@@ -191,16 +192,10 @@ def number_key(m) -> str:
     "One number key"
     return m.number_key
 
-
 @mod.capture(rule="{self.letter}")
 def letter(m) -> str:
     "One letter key"
     return m.letter
-
-@mod.capture(rule="{self.letter}+")
-def letters(m) -> str:
-    "Multiple letter keys"
-    return "".join(m.letter_list)
 
 @mod.capture(rule="{self.symbol_key}")
 def symbol_key(m) -> str:
@@ -214,17 +209,5 @@ def function_key(m) -> str:
     return m.function_key
 
 
-@mod.capture(rule="( <self.letter> | <self.number_key> | <self.symbol_key> )")
-def any_alphanumeric_key(m) -> str:
-    "any alphanumeric key"
-    return str(m)
 
-
-@mod.capture(
-    rule="( <self.letter> | <self.number_key> | <self.symbol_key> "
-    "| <self.movement> | <self.function_key>  )"
-)
-def unmodified_key(m) -> str:
-    "A single key with no modifiers"
-    return str(m)
 
