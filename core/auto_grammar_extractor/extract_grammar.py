@@ -1,6 +1,10 @@
+#!/usr/bin/python3.9
+import ast
 import re
+import sys
+from _ast import Expression, Assign
 from pathlib import Path
-from typing import List
+from typing import List, Any
 
 
 class TreeNode:
@@ -44,76 +48,137 @@ class TreeNode:
     def __hash__(self):
         return hash(self.name)
 
-def add_tokens_to_node(node:TreeNode,tokens:List[str]):
+
+def add_tokens_to_node(node: TreeNode, tokens: List[str]):
     if len(tokens) == 0:
         return
 
-
     token = tokens.pop(0)
     node.add_child(token)
-    add_tokens_to_node(node.children[token],tokens)
+    add_tokens_to_node(node.children[token], tokens)
 
-def python_visitor(node:TreeNode, vocabulary, depth=0, max_depth=10):
-    command=None
-    if node.get_count()>0:
-        command =node.get_name()
+
+def python_visitor(current_node: TreeNode):
+    command = None
+    if current_node.get_count() > 0:
+        command = current_node.get_name()
+        contains_any_alphabetic_characters = re.findall('[A-Za-z]', command)
+        if len(contains_any_alphabetic_characters) == 0:
+            return None
+        # pattern that checks if they are matching parentheses
+        # pattern= re.compile(r'\(.*\)')
+        contains_any_alphabetic_characters = re.findall('[^A-Za-z]', command)
+        if len(contains_any_alphabetic_characters) > 3:
+            return None
+
+        if len(command) < 3 or len(command) > 15:
+            return None
 
     return command
 
-def generic_visitor(node:TreeNode, vocabulary, visitor_function,depth=0, max_depth=10):
+
+def generic_visitor(current_node: TreeNode, vocabulary, visitor_function, depth=0, max_depth=10):
     if depth > max_depth:
         return
-    command=visitor_function(node,vocabulary)
+
+    command = visitor_function(current_node)
+    parent = current_node.get_parent()
+    while parent and command is not None:
+        parent_command = visitor_function(parent)
+        if parent_command:
+            command = parent_command + " " + command
+            parent = parent.get_parent()
     if command:
-        parent = node.get_parent()
-        while parent:
-            command = parent.get_name() + " " + command
-            parent = parent.get_parent()
         vocabulary.append(command)
-    for child in node.get_children().values():
-        extract_bash_commands(child, vocabulary, depth + 1)
-
-def extract_bash_commands(node:TreeNode, vocabulary, depth=0, max_depth=10):
-    if depth > max_depth:
-        return
-    if node.get_count()>3:
-        command =node.get_name()
+        for child in current_node.get_children().values():
+            generic_visitor(child, vocabulary, visitor_function, depth + 1)
 
 
+def removed_children_that_are_in_root(root: List[TreeNode]):
+    root_copy = root.copy()
+    for node in root_copy.values():
+        node_copy = node.get_children().copy()
+        for child in node_copy.values():
+            name = re.sub(r'[:/.,=><$@#]', '', child.get_name())
+            if name in root:
+                root[node.get_name()].get_children().pop(child.get_name())
 
-        parent= node.get_parent()
-        while parent:
-            command= parent.get_name() + " " + command
-            parent = parent.get_parent()
-        vocabulary.append(command)
-    for child in node.get_children().values():
-        extract_bash_commands(child, vocabulary, depth + 1)
 
-def extract_from_file(filepath:Path):
+def clean_command(command):
+    command= re.sub(r'[._]', ' ', command)
+    command= re.sub(r'[:"\']', '', command)
+    return command
+
+
+def tokenize(line):
+    line=re.sub(r'#.*','', line)
+    line = re.sub(r'\n', '', line)
+    # Remove anything that is in between any kind of parentheses
+    line = re.sub(r'(\(.*\)|\[.*\]|{.*})', '', line)
+    line = re.sub(r'[\)>}\],\[\(]','', line)
+    #Split the incoming string on white spaces unless they are in quotes
+    tokens = re.findall(r'[^ |=|\.\']+|"[^"|\']+"', line)
+
+    return tokens
+
+def extract_from_file(filepath: Path):
     nodes = {}
-    with open(filepath,'r') as f:
+    with open(filepath, 'r') as f:
         lines = f.readlines()
         for line in lines:
             # split each line into tokens
-            tokens = line.split()
+            tokens = tokenize(line)
             if len(tokens) == 0:
                 continue
-            if tokens[0] in nodes:
-                nodes[tokens[0]].increment_count()
-            else:
-                nodes[tokens[0]] = TreeNode(tokens[0])
-            if len(tokens[1:]) > 1:
-                add_tokens_to_node(nodes[tokens[0]],tokens[1:])
-            else:
-                nodes[tokens[0]].increment_end_count()
+            for token in tokens:
+                if token not in nodes:
+                    nodes[token] = TreeNode(token)
+                else:
+                    nodes[token].increment_count()
     command_list = []
+    removed_children_that_are_in_root(nodes)
     for node in nodes.values():
-        generic_visitor(node, command_list,python_visitor)
+        generic_visitor(node, command_list, python_visitor)
     #
-    return nodes
+    command_map={}
+    for command in command_list:
+        command_map[clean_command(command)]=command
+    return command_map
+
+
+class Replace(ast.NodeTransformer):
+    def __init__(self, mapping):
+        self.mapping = mapping
+
+    def visit_Assign(self, node: Assign) -> Any:
+        print(ast.dump(node))
+        if isinstance(node.targets[0], ast.Name) and \
+         node.targets[0].id == 'automatically_generated_mapping':
+
+            replacement = ast.Dict(keys=[ast.Str(key) for key in talon_dictionary.keys()],
+                                   values=[ast.Str(value) for value in talon_dictionary.values()])
+            node.value=ast.copy_location(replacement, node.value)
+        return node
+
+    def visit_Expression(self, node: Expression) -> Any:
+        print(ast.dump(node))
+        return super().visit_Expression(node)
+
 
 if __name__ == '__main__':
-    # get the path to the file
-    filepath = Path('~/.bash_history').expanduser()
-    filepath = Path('~/PycharmProjects/raat-search/search_server/fkie_search/core/interface.py').expanduser()
-    extract_from_file(filepath)
+    if  len(sys.argv) ==2:
+        filepath=sys.argv[1]
+    else:    #filepath = Path('~/.bash_history').expanduser()
+        filepath = Path('~/PycharmProjects/raat-search/search_server/fkie_search/__main__.py').expanduser()
+        # filepath = Path('~/PycharmProjects/raat-search/search_server/fkie_search/core/ttt.py').expanduser()
+
+    talon_dictionary=extract_from_file(filepath)
+
+
+    with open(Path('~/.talon/user/core/auto_grammar_extractor/auto_python.py').expanduser(), 'r') as f:
+        parsed = ast.parse(f.read())
+        parsed=Replace(talon_dictionary).visit(parsed)
+    with open(Path('~/.talon/user/core/auto_grammar_extractor/auto_python.py').expanduser(), 'w') as f:
+        f.write(ast.unparse(parsed))
+
+    print(talon_dictionary)

@@ -127,6 +127,7 @@ symbol_key_words = {
     "dollar": "$",
     "pound": "£",
     "act": "escape",
+
     "space": "space",
     "insert": "insert",
 }
