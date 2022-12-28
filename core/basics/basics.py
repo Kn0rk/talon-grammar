@@ -127,7 +127,6 @@ symbol_key_words = {
     "dollar": "$",
     "pound": "£",
     "act": "escape",
-
     "space": "space",
     "insert": "insert",
 }
@@ -163,12 +162,12 @@ ctx.lists["self.compound_movement"] = {
 def modifiers(m) -> str:
     "One or more modifier keys"
     return "-".join(m.modifier_key_list)
-@mod.capture(rule="( {self.movement} | {self.compound_movement} | {self.letter})")
+@mod.capture(rule="( {self.movement} | {self.compound_movement})")
 def movement(m) -> str:
-    "One directional arrow key"
+    "Any key that moves The cursor."
     return m[0]
 
-@mod.capture(rule="[ {self.modifier_key}+ ] (<self.movement> [<self.number_key>] )+")
+@mod.capture(rule="[ {self.modifier_key}+ ] (<self.movement> [<self.number_key>]|<self.letter> )+")
 def modified_movements(m) -> str:
     "One or more arrow basics separated by a space"
     keys=str(m).split()
@@ -202,6 +201,12 @@ def letter(m) -> str:
 def symbol_key(m) -> str:
     "One symbol key"
     return m.symbol_key
+
+@mod.capture(rule="<self.symbol_key>|<self.letter>|<self.number_key>")
+def any_alphanumeric_key(m) -> str:
+    "One alphanumeric key"
+    return m
+
 
 
 @mod.capture(rule="{self.function_key}")
