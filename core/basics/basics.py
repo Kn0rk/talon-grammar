@@ -2,9 +2,8 @@ import os.path
 import sys
 from talon import Context, Module, actions, app
 
-
-mod= Module()
-ctx =Context()
+mod = Module()
+ctx = Context()
 
 '''
 Alphabet
@@ -20,7 +19,8 @@ ctx.lists["self.letter"] = alphabet
 '''
 Digits
 '''
-default_digits = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split(" ")
+default_digits = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split(
+    " ")
 numbers = [str(i) for i in range(20)]
 ctx.lists["self.number_key"] = dict(zip(default_digits, numbers))
 mod.list("number_key", desc="All number basics")
@@ -36,7 +36,6 @@ ctx.lists["self.function_key"] = {
     f"function {default_f_digits[i]}": f"f{i + 1}" for i in range(12)
 }
 
-
 '''
 Modifier basics
 '''
@@ -46,7 +45,7 @@ modifier_keys = {
     "shift": "shift",
     "window": "super",
     "windows": "super",
-    #"win": "super",
+    # "win": "super",
 }
 mod.list("modifier_key", desc="All modifier basics")
 ctx.lists["self.modifier_key"] = modifier_keys
@@ -139,8 +138,8 @@ ctx.lists["self.movement"] = {
     "left": "left",
     "right": "right",
     "up": "up",
-    "ending":"end",
-    "home":"home",
+    "ending": "end",
+    "home": "home",
     "page up": "pageup",
     "page down": "pagedown",
     "wipe": "backspace",
@@ -158,49 +157,57 @@ ctx.lists["self.compound_movement"] = {
 
 }
 
+
 @mod.capture(rule="{self.modifier_key}+")
 def modifiers(m) -> str:
     "One or more modifier keys"
     return "-".join(m.modifier_key_list)
+
+
 @mod.capture(rule="( {self.movement} | {self.compound_movement})")
 def movement(m) -> str:
     "Any key that moves The cursor."
     return m[0]
 
-@mod.capture(rule="[ {self.modifier_key}+ ] (<self.movement> [<self.number_key>]|<self.letter> )+")
+
+@mod.capture(rule="[ {self.modifier_key}+ ] [down] ((<self.movement> [<self.number_key>])+ | (<self.letter> <self.letter>+) )")
 def modified_movements(m) -> str:
-    "One or more arrow basics separated by a space"
-    keys=str(m).split()
-    mods=None
-    key_list=[]
+    "Allows most keys that move the cursor without adding content to be modified by ctrl/alt/shift/win"
+    keys = str(m).split()
+    mods = None
+    key_list = []
     for key in keys:
         if key in modifier_keys.values():
-            mods=mods+"-"+key if mods else key
+            mods = mods + "-" + key if mods else key
         elif key in numbers:
-            num=int(key)
-            key_list.extend([key_list[-1] for i in range(num-1)])
+            num = int(key)
+            key_list.extend([key_list[-1] for i in range(num - 1)])
         else:
             if mods:
-                key_list.append(mods+"-"+key)
+                key_list.append(mods + "-" + key)
             else:
                 key_list.append(key)
-    result=" ".join(key_list)
+    result = " ".join(key_list)
     return result
+
 
 @mod.capture(rule="{self.number_key}")
 def number_key(m) -> str:
     "One number key"
     return m.number_key
 
+
 @mod.capture(rule="{self.letter}")
 def letter(m) -> str:
     "One letter key"
     return m.letter
 
+
 @mod.capture(rule="{self.symbol_key}")
 def symbol_key(m) -> str:
     "One symbol key"
     return m.symbol_key
+
 
 @mod.capture(rule="<self.symbol_key>|<self.letter>|<self.number_key>")
 def any_alphanumeric_key(m) -> str:
@@ -208,12 +215,7 @@ def any_alphanumeric_key(m) -> str:
     return m
 
 
-
 @mod.capture(rule="{self.function_key}")
 def function_key(m) -> str:
     "One function key"
     return m.function_key
-
-
-
-

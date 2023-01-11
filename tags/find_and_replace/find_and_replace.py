@@ -18,15 +18,6 @@ class Actions:
     def find_everywhere(text: str):
         """Finds text across project"""
 
-    def find_toggle_match_by_case():
-        """Toggles find match by case sensitivity"""
-
-    def find_toggle_match_by_word():
-        """Toggles find match by whole words"""
-
-    def find_toggle_match_by_regex():
-        """Toggles find match by regex"""
-
     def replace(text: str):
         """Search and replace for text in the active editor"""
 
@@ -44,12 +35,13 @@ class Actions:
 
     def select_next_occurrence(text: str):
         """Selects the next occurrence of the text, and suppresses any find/replace dialogs."""
-    def goto_next(text: str, num: int):
-        """find next occurance of text and place cursor to the right"""
+
+    def goto_next_phrase(text: str, num: int):
+        """find next occurance of a phrase and place cursor to the right"""
         pass
 
-    def goto_prev(text: str, num: int):
-        """find next occurance of text and place cursor to the right"""
+    def goto_previous_phrase(text: str, num: int):
+        """find next occurance of a phrase and place cursor to the right"""
         pass
 
     def goto_next_character(text: str = "", num: int = 1):

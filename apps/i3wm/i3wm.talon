@@ -4,6 +4,8 @@ tag: user.i3wm
 -
 window <user.number_key>: key("super-{user.number_key}")
 window move <user.number_key>: key("super-shift-{user.number_key}")
+window move <user.movement>: key("super-shift-{user.movement}")
+
 
 
 (( window) kill | murder | close): user.system_command("i3-msg kill")

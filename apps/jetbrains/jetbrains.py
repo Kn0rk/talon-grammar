@@ -80,30 +80,13 @@ class EditActions:
 
 
 
-
-@ctx.action_class("win")
-class WinActions:
-    def filename() -> str:
-        title: str = actions.win.title()
-        result = title.split()
-
-        # iterate over reversed result
-        # to support titles such as
-        # Class.Library2 – a.js [.workspace]
-        for word in reversed(result):
-            if not word.startswith("[") and "." in word:
-                return word
-
-        return ""
-
-
 @ctx.action_class("user")
 class UserActions:
 
     def goto_next_character(text: str = "", num: int = 1):
         actions.user.goto_next(text ,num)
 
-    def goto_next(text: str = "", num: int = 1):
+    def goto_next_phrase(text: str = "", num: int = 1):
         # actions.key("ctrl-right")
         actions.key("ctrl-f")
         time.sleep(0.35)
@@ -120,7 +103,7 @@ class UserActions:
     def goto_prev_character(text: str = "", num: int = 1):
         actions.user.goto_prev(text, num)
 
-    def goto_prev(text: str = "", num: int = 1):
+    def goto_prev_phrase(text: str = "", num: int = 1):
         # actions.key("ctrl-left")
         actions.key("ctrl-f")
         time.sleep(0.35)
