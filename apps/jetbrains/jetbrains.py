@@ -84,36 +84,38 @@ class EditActions:
 class UserActions:
 
     def goto_next_character(text: str = "", num: int = 1):
-        actions.user.goto_next(text ,num)
+        actions.user.goto_next_phrase(text ,num)
 
     def goto_next_phrase(text: str = "", num: int = 1):
         # actions.key("ctrl-right")
         actions.key("ctrl-f")
-        time.sleep(0.35)
+        time.sleep(0.1)
+        actions.key("ctrl-a")
+        actions.key("delete")
+        time.sleep(0.25)
         actions.key(" ".join(text))
-        time.sleep(0.2)
-        actions.key("enter")
+        time.sleep(0.1)
         actions.key("escape")
-        # if len(text) == 1:
-        #     num += 1
-        for i in range(num - 1):
+        for i in range(num-1):
             actions.key("f3")
         actions.key("escape")
 
-    def goto_prev_character(text: str = "", num: int = 1):
-        actions.user.goto_prev(text, num)
 
-    def goto_prev_phrase(text: str = "", num: int = 1):
+    def goto_previous_character(text: str = "", num: int = 1):
+        actions.user.goto_previous_phrase(text, num)
+
+    def goto_previous_phrase(text: str = "", num: int = 1):
         # actions.key("ctrl-left")
         actions.key("ctrl-f")
-        time.sleep(0.35)
+        time.sleep(0.1)
+        actions.key("ctrl-a")
+        actions.key("delete")
+        time.sleep(0.1)
         actions.key(" ".join(text))
-        time.sleep(0.2)
-        actions.key("enter")
-
+        time.sleep(0.1)
         actions.key("escape")
 
-        for i in range(num + 1):
+        for i in range(num+1):
             actions.key("shift-f3")
         actions.key("escape")
 

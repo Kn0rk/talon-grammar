@@ -36,6 +36,7 @@ class Actions:
     def select_next_occurrence(text: str):
         """Selects the next occurrence of the text, and suppresses any find/replace dialogs."""
 
+
     def goto_next_phrase(text: str, num: int):
         """find next occurance of a phrase and place cursor to the right"""
         pass
@@ -46,7 +47,8 @@ class Actions:
 
     def goto_next_character(text: str = "", num: int = 1):
         """find next occurance of a character and place cursor to the right"""
+        pass
 
-
-    def goto_prev_character(text: str = "", num: int = 1):
+    def goto_previous_character(text: str = "", num: int = 1):
         """find next occurance of a character and place cursor to the right"""
+        pass

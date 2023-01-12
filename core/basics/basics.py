@@ -170,7 +170,7 @@ def movement(m) -> str:
     return m[0]
 
 
-@mod.capture(rule="[ {self.modifier_key}+ ] [down] ((<self.movement> [<self.number_key>])+ | (<self.letter> <self.letter>+) )")
+@mod.capture(rule="[ {self.modifier_key}+ ] [down] ((<self.movement> [<self.number_key>])+ | (<self.letter>+) )")
 def modified_movements(m) -> str:
     "Allows most keys that move the cursor without adding content to be modified by ctrl/alt/shift/win"
     keys = str(m).split()

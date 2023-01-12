@@ -25,7 +25,29 @@ toogle find: key("alt-3")
 toggle run: key("alt-4")
 toggle debug: key("alt-5")
 toggle problems: key("alt-6")
+toggle structure: key("alt-7")
 toggle services: key("alt-8")
 toggle git: key("alt-9")
+
+# Code folding
+collapse: key("ctrl-minus")
+collapse all: key("ctrl-shift-keypad_minus")
+expand: key("ctrl-plus")
+expand all: key("ctrl-shift-keypad_plus")
+collapse to <number_small>:
+    key("ctrl-keypad_multiply")
+    sleep(500ms)
+    key("keypad_{number_small}")
+collapse all to <number_small>:
+    key("ctrl-shift-keypad_multiply")
+    sleep(500ms)
+    key("keypad_{number_small}")
+
+# Navigation
+go to file: key('ctrl-shift-n')
+go to class: key('ctrl-n')
+go to symbol: key('ctrl-alt-shift-n')
+go to symbols: key('ctrl-alt-shift-n')
+go to actions: key('ctrl-shift-a')
 
 
