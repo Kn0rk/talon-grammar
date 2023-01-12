@@ -74,6 +74,7 @@ class EditActions:
 
     def jump_line(n: int):
         actions.key("ctrl-g")
+        time.sleep(0.1)
         actions.insert(n)
         time.sleep(0.1)
         actions.key('enter')
@@ -126,6 +127,7 @@ class UserActions:
 
     def select_range(line_start: int, line_end: int):
         actions.key("ctrl-g")
+        time.sleep(0.1)
         actions.insert(line_start)
         time.sleep(0.1)
         actions.key('enter')

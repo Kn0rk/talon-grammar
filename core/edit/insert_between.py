@@ -11,7 +11,6 @@ class module_actions:
         for _ in after:
             actions.edit.left()
 
-
     # This is deprecated, please use insert_between instead.
     def insert_cursor(text: str):
         """Insert a string. Leave the cursor wherever [|] is in the text"""

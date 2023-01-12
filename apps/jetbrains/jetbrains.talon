@@ -10,6 +10,7 @@ tag(): user.find_and_replace
 # Auto complete
 complete: key("ctrl-space")
 actions: key("alt-enter")
+fix: key("alt-enter")
 
 
 # GIT
@@ -49,5 +50,44 @@ go to class: key('ctrl-n')
 go to symbol: key('ctrl-alt-shift-n')
 go to symbols: key('ctrl-alt-shift-n')
 go to actions: key('ctrl-shift-a')
+
+# Execution
+run debug:key('shift-f9')
+run app: key('shift-f10')
+stop app: key('ctrl-f2')
+set breakpoint: key('ctrl-f8')
+edit breakpoint: key(' shift-ctrl-f8')
+continue running: key('f9')
+step over [<number_small>]:
+    number=number_small or 1
+    number=number - 1
+    key('f8')
+    repeat(number)
+
+# refactoring
+rename: key('shift-f6')
+restructure: key('ctrl-alt-l')
+comment: key('ctrl-keypad_divide')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -1,4 +1,16 @@
 #!/usr/bin/python3.9
+"""
+ You can call this module from the commandline
+ and you should provide the path to file you wish
+ to extract the or vocabulary from as the first argument.
+
+   this script currently only supports python files.
+
+ if you are using jetbrains products you can automatically update se vocabulary by adding
+  a file watcher to execute this script on a change to a python file.
+
+"""
+import argparse
 import ast
 import re
 import sys
@@ -118,14 +130,11 @@ class TreeNode:
 #     return command
 
 
-def tokenize(line:str) -> List[str]:
-    org=line
+def python_tokenizer(line:str) -> List[str]:
     # remove comments
     line = re.sub(r'#.*', '', line)
     line = re.sub(r'\n', '', line)
-    # Remove anything that is in between any kind of parentheses
-    #line = re.sub(r'(\(.*\)|\[.*\]|{.*})', '', line)
-    #line = re.sub(r'[\)>}\],\[\(]', '', line)
+
     # Split the incoming string on white spaces unless they are in quotes
     str_tokens = re.findall(r'(".+?"|\'.+?\')+', line)
     tokens = []
@@ -133,22 +142,34 @@ def tokenize(line:str) -> List[str]:
         if len(token) < 10 and len(token.split()) < 2:
             tokens.append(token)
         line=line.replace(token, '')
+        line=line.strip()
     tokens.extend([token[0] for token in re.findall(r'((\.|->)?[A-Za-z_][A-Za-z_0-9]+)', line)])
 
     return tokens
 
+def terminal_tokenizer(line:str) -> List[str]:
+    # remove comments
+    line = re.sub(r'#.*', '', line)
+    line = re.sub(r'\n', '', line)
+    line = line.strip()
+    if len(line) < 3 or len(line) > 45:
+       return []
+    return [line]
 
-def extract_from_file(filepath: Path)-> Dict[Any, Union[str, Any]]:
+def extract_from_file(filepath: Path,
+                      line_tokenizer)-> Dict[Any, Union[str, Any]]:
+    # (Raw tokenized input, frequency)
     nodes = {}
     # Read and tokenize the file
     with open(filepath, 'r') as f:
         lines = f.readlines()
         for line in lines:
             # split each line into tokens
-            tokens = tokenize(line)
+            tokens = line_tokenizer(line)
             if len(tokens) == 0:
                 continue
             for token in tokens:
+
                 if token not in nodes:
                     nodes[token] = (token,0)
                 else:
@@ -157,24 +178,35 @@ def extract_from_file(filepath: Path)-> Dict[Any, Union[str, Any]]:
 
     spoken_to_insert={}
 
-    # Split tokens on word boundaries su1ch as _ for camel case or lower/upper case for camel
+    # Split tokens on word boundaries such as _ for camel case or lower/upper case for camel
     # E.g. for the token "getMyName"
     # get -> get
     # get my -> getMy
     # get my name -> getMyName
     for idx,node in enumerate(nodes.values()):
-        clean_name=re.sub(r'[\.\'"]', '', node[0])
+        clean_name=node[0]
 
-        # explode camel case
-        # explode snake case
-        clean_name= re.sub(r'(_)',' ', clean_name)
-        clean_name = re.sub('([A-Z][a-z]+)', r' \1', re.sub('([a-z])([A-Z]{2,})', r' \2', clean_name))
-        clean_name= clean_name.strip()
+        # todo: detect ands handle paths differently
+        raw=clean_name
+        # sup tokenizes on the following characters
+        clean_name= re.sub(r'(_|-|\[|\.)',' ', clean_name)
         clean_name=clean_name.lower()
-        clean_names = [(m.group(0), (m.start(), m.end() - 1)) for m in re.finditer(r'\S+', clean_name)]
+        # split on camel cases without changing the indices of the strings
+        clean_names=[(m.group(),(m.start(),m.end())) for m in re.finditer(r'[A-Z](?:[a-z]+|[A-Z]*(?=[A-Z]|$))|[a-z]+', clean_name)]
+
         for split in clean_names:
+            assert len(clean_name)==len(raw)
             spoken=clean_name[0:split[1][1]+1]
-            result=node[0][0:split[1][1]+1]
+            result=raw[0:split[1][1]+1]
+            unwanted_characters = re.findall(r'[^a-zA-Z ]+', spoken)
+            spoken=re.sub(r'[^a-zA-Z ]', '', spoken)
+            longest=0
+            for character in unwanted_characters:
+                if len(character) > longest:
+                    longest=len(character)
+            if longest > 1:
+                break
+            spoken=spoken.strip()
             if clean_name not in spoken_to_insert:
                 spoken_to_insert[spoken]=[(result,node[1],idx)]
             else:
@@ -189,7 +221,7 @@ def extract_from_file(filepath: Path)-> Dict[Any, Union[str, Any]]:
         node.sort(key=lambda x:x[1],reverse=True)
         # Pick the most frequent realisation of the clean name
         mapping_string=node[0][0]
-        mapping_string=re.sub(r'[\.\'"]', '', mapping_string)
+
         command_list[key]=mapping_string
         split_key=key.split()
         if len(split_key)>1:
@@ -217,20 +249,36 @@ class Replace(ast.NodeTransformer):
 
 
 if __name__ == '__main__':
-    # clean_name = 'getMyNameXYA'
-    # res = re.sub('([A-Z][a-z]+)', r' \1', re.sub('([A-Z]{2,})', r' \1', clean_name))
-    if len(sys.argv) == 2:
-        filepath =  Path(sys.argv[1]).expanduser()
-    else:  # filepath = Path('~/.bash_history').expanduser()
-        # filepath = Path('~/PycharmProjects/raat-search/search_server/fkie_search/__main__.py').expanduser()
-        filepath = Path('~/PycharmProjects/raat-search/search_server_fast/src/search/core/interface.py').expanduser()
+    # parse arguments with argparse
+    parser = argparse.ArgumentParser(description='Extracts a list of commands from a python file')
+    parser.add_argument('file', type=str, help='The file to extract commands from')
+    # optional arguments
+    parser.add_argument('-type', type=str, choices=['auto','python','terminal'],nargs= '?', default='auto', help='The file type to extract commands from. This will determine to which automatically generated file the commands will be added to.')
 
-    talon_dictionary = extract_from_file(filepath)
+    args = parser.parse_args()
+    file = Path(args.file).expanduser()
 
-    with open(Path('~/.talon/user/core/auto_grammar_extractor/auto_python.py').expanduser(), 'r') as f:
+    if not file.exists():
+        raise FileNotFoundError(f'File {file} does not exist')
+    file_type = file.suffix
+    if args.type == 'auto':
+        if file_type == '.py':
+            file_type = 'python'
+        else:
+            raise Exception(f'Could not determine file type of {file}')
+    else:
+        file_type = args.type
+
+    tokenizer_map = {
+        'python': python_tokenizer,
+        'terminal': terminal_tokenizer
+    }
+    talon_dictionary = extract_from_file(file, tokenizer_map[file_type])
+
+    with open(Path(f'~/.talon/user/core/auto_grammar_extractor/auto_{file_type}.py').expanduser(), 'r') as f:
         parsed = ast.parse(f.read())
         parsed = Replace(talon_dictionary).visit(parsed)
-    with open(Path('~/.talon/user/core/auto_grammar_extractor/auto_python.py').expanduser(), 'w') as f:
+    with open(Path(f'~/.talon/user/core/auto_grammar_extractor/auto_{file_type}.py').expanduser(), 'w') as f:
         f.write(ast.unparse(parsed))
 
 
