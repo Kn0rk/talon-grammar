@@ -1,4 +1,5 @@
-not mode: sleep
+mode: dictation
+mode: command
 -
 ^dictation mode$:
     mode.disable("sleep")
@@ -14,3 +15,8 @@ not mode: sleep
     mode.disable("sleep")
     mode.enable("dictation")
     mode.enable("command")
+^talon sleep [<phrase>]$:
+    mode.disable("command")
+    mode.disable("dictation")
+    mode.enable("sleep")
+
