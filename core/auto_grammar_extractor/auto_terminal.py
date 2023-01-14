@@ -1,6 +1,10 @@
 from talon import Context, Module, actions
 
 ctx = Context()
+# Context matching
+ctx.matches = r"""
+app: gnome_terminal
+"""
 mod = Module()
 terminal_keywords = {}
 mod.list('vocabulary', desc='additional vocabulary words')
@@ -366,7 +370,7 @@ automatically_generated_mapping = {'sudo apt': 'sudo apt ', 'sudo': 'sudo', 'sud
                                    'cd model': 'cd model_', 'cd model weights': 'cd model_weights/'}
 mod.list('terminal_keywords', desc='Automatically extracted key words from terminal files')
 ctx.lists['self.terminal_keywords'] = dict(automatically_generated_mapping, **terminal_keywords)
-
+ctx.lists['user.vocabulary'] = dict(automatically_generated_mapping, **terminal_keywords)
 
 @mod.capture(rule='{self.terminal_keywords}+')
 def terminal_keywords(m) -> str:

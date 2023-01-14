@@ -1,9 +1,6 @@
 from talon import Context, Module, actions
 ctx = Context()
-
-ctx.matches = r"""
-app: jetbrains
-"""
+ctx.matches = '\napp: jetbrains\n'
 mod = Module()
 python_keywords = {'false': 'False', 'none': 'None', 'true': 'True', 'and': 'and', 'as': 'as', 'assert': 'assert', 'async': 'async', 'await': 'await', 'break': 'break', 'class': 'class', 'continue': 'continue', 'define': 'def', 'elif': 'elif', 'else': 'else', 'except': 'except', 'finally': 'finally', 'for': 'for', 'from': 'from', 'global': 'global', 'if': 'if', 'import': 'import', 'in': 'in', 'is': 'is', 'lambda': 'lambda', 'nonlocal': 'nonlocal', 'not': 'not', 'or': 'or', 'pass': 'pass', 'raise': 'raise', 'return': 'return', 'try': 'try', 'while': 'while', 'with': 'with', 'yield': 'yield', 'telephone': 'THIS IS TEST'}
 mod.list('vocabulary', desc='additional vocabulary words')
