@@ -8,7 +8,7 @@ window move <user.movement>: key("super-shift-{user.movement}")
 
 
 
-(( window) kill | murder | close): user.system_command("i3-msg kill")
+( window) (kill | murder | close): user.system_command("i3-msg kill")
 ( window) stacking: user.system_command("i3-msg layout stacking")
 ( window) default: user.system_command("i3-msg layout toggle split")
 (full screen | scuba): user.system_command("i3-msg fullscreen")

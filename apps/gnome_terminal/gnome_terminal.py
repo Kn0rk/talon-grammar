@@ -11,7 +11,14 @@ ctx = Context()
 ctx.matches = r"""
 app: gnome_terminal
 """
+mod.list("compound_movement", desc="All movement basics")
+ctx.lists["self.compound_movement"] = {
+    "east": "alt-right",
+    "west": "alt-left",
+    "bump": "alt-delete",
+    "pimp": "alt-backspace",
 
+}
 
 # --- Implement actions ---
 @ctx.action_class("user")

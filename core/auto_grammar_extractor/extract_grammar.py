@@ -12,6 +12,7 @@
 """
 import argparse
 import ast
+import enum
 import re
 import sys
 from _ast import Expression, Assign
@@ -238,8 +239,8 @@ class Replace(ast.NodeTransformer):
         print(ast.dump(node))
         if isinstance(node.targets[0], ast.Name) and \
                 node.targets[0].id == 'automatically_generated_mapping':
-            replacement = ast.Dict(keys=[ast.Str(key) for key in talon_dictionary.keys()],
-                                   values=[ast.Str(value) for value in talon_dictionary.values()])
+            replacement = ast.Dict(keys=[ast.Str(key) for key in self.mapping.keys()],
+                                   values=[ast.Str(value) for value in self.mapping.values()])
             node.value = ast.copy_location(replacement, node.value)
         return node
 
@@ -247,6 +248,37 @@ class Replace(ast.NodeTransformer):
         print(ast.dump(node))
         return super().visit_Expression(node)
 
+
+
+class SupportedTypes(enum.Enum):
+    python = 'python'
+    terminal = 'terminal'
+    auto = 'auto'
+
+def main(file:Path,type:SupportedTypes):
+    file=file.expanduser()
+    if not file.expanduser().exists():
+        raise FileNotFoundError(f'File {file} does not exist')
+    file_type = file.suffix
+    if type == SupportedTypes.auto:
+        if file_type == '.py':
+            file_type = SupportedTypes.python
+        else:
+            raise Exception(f'Could not determine file type of {file}')
+    else:
+        file_type = type
+
+    tokenizer_map = {
+        SupportedTypes.python: python_tokenizer,
+        SupportedTypes.terminal: terminal_tokenizer
+    }
+    talon_dictionary = extract_from_file(file, tokenizer_map[file_type])
+
+    with open(Path(f'~/.talon/user/core/auto_grammar_extractor/auto_{file_type.name}.py').expanduser(), 'r') as f:
+        parsed = ast.parse(f.read())
+        parsed = Replace(talon_dictionary).visit(parsed)
+    with open(Path(f'~/.talon/user/core/auto_grammar_extractor/auto_{file_type.name}.py').expanduser(), 'w') as f:
+        f.write(ast.unparse(parsed))
 
 if __name__ == '__main__':
     # parse arguments with argparse
@@ -257,28 +289,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     file = Path(args.file).expanduser()
+    main(file,SupportedTypes[args.type])
 
-    if not file.exists():
-        raise FileNotFoundError(f'File {file} does not exist')
-    file_type = file.suffix
-    if args.type == 'auto':
-        if file_type == '.py':
-            file_type = 'python'
-        else:
-            raise Exception(f'Could not determine file type of {file}')
-    else:
-        file_type = args.type
 
-    tokenizer_map = {
-        'python': python_tokenizer,
-        'terminal': terminal_tokenizer
-    }
-    talon_dictionary = extract_from_file(file, tokenizer_map[file_type])
-
-    with open(Path(f'~/.talon/user/core/auto_grammar_extractor/auto_{file_type}.py').expanduser(), 'r') as f:
-        parsed = ast.parse(f.read())
-        parsed = Replace(talon_dictionary).visit(parsed)
-    with open(Path(f'~/.talon/user/core/auto_grammar_extractor/auto_{file_type}.py').expanduser(), 'w') as f:
-        f.write(ast.unparse(parsed))
 
 
