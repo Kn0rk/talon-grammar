@@ -14,7 +14,6 @@ setting_context_sensitive_dictation = mod.setting(
 )
 
 mod.list("prose_modifiers", desc="Modifiers that can be used within prose")
-mod.list("prose_snippets", desc="Snippets that can be used within prose")
 ctx = Context()
 # Maps spoken forms to DictationFormat method names (see DictationFormat below).
 ctx.lists["user.prose_modifiers"] = {
@@ -23,17 +22,7 @@ ctx.lists["user.prose_modifiers"] = {
     "no caps": "no_cap",  # "no caps" variant for Dragon
     "no space": "no_space",
 }
-ctx.lists["user.prose_snippets"] = {
-    "spacebar": " ",
-    "new line": "\n",
-    "new paragraph": "\n\n",
-    # Curly quotes are used to obtain proper spacing for left and right quotes, but will later be straightened.
-    "open quote": "“",
-    "close quote": "”",
-    "smiley": ":-)",
-    "winky": ";-)",
-    "frowny": ":-(",
-}
+
 
 
 @mod.capture(rule="{user.prose_modifiers}")
@@ -73,11 +62,6 @@ def word(m) -> str:
             actions.dictate.replace_words(actions.dictate.parse_words(m.word))
         )
 
-
-@mod.capture(rule="({user.vocabulary} | <phrase>)+")
-def text(m) -> str:
-    """A sequence of words, including user-defined vocabulary."""
-    return format_phrase(m)
 
 
 @mod.capture(
