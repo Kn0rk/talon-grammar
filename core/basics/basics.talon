@@ -1,7 +1,12 @@
-<user.letter>: key(letter)
-<user.function_key>: key(function_key)
 <user.modified_movements>: key(modified_movements)
-<user.symbol_key>: key(symbol_key)
+[go] <user.movement> [<number_small>]:
+    number=number_small or 1
+    number=number-1
+    key(movement)
+    repeat(number)
+
+press <user.alphasymbolic_key>+:
+   user.key_list(alphasymbolic_key_list)
 double <user.symbol_key>:
     key(symbol_key)
     key(symbol_key)
@@ -10,4 +15,4 @@ triple <user.symbol_key>:
     key(symbol_key)
     key(symbol_key)
     key(symbol_key)
-or
+

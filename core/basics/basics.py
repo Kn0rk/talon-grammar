@@ -1,5 +1,7 @@
 import os.path
 import sys
+from typing import List
+
 from talon import Context, Module, actions, app
 
 mod = Module()
@@ -170,7 +172,7 @@ def movement(m) -> str:
     return m[0]
 
 
-@mod.capture(rule="[ {self.modifier_key}+ ] [down] ((<self.movement> [<self.number_key>])+ | (<self.letter>+) )")
+@mod.capture(rule=" {self.modifier_key}+ [down] ((<self.movement> [<self.number_key>])+ | (<self.letter>+) )")
 def modified_movements(m) -> str:
     "Allows most keys that move the cursor without adding content to be modified by ctrl/alt/shift/win"
     keys = str(m).split()
@@ -191,6 +193,8 @@ def modified_movements(m) -> str:
     return result
 
 
+
+
 @mod.capture(rule="{self.number_key}")
 def number_key(m) -> str:
     "One number key"
@@ -208,14 +212,25 @@ def symbol_key(m) -> str:
     "One symbol key"
     return m.symbol_key
 
+@mod.capture(rule="<self.symbol_key>|<self.letter>")
+def alphasymbolic_key(m) -> str:
+    "One alphabetical or symbolic key"
+    return m[0]
 
 @mod.capture(rule="<self.symbol_key>|<self.letter>|<self.number_key>")
 def any_alphanumeric_key(m) -> str:
     "One alphanumeric key"
-    return m
+    return m[0]
 
 
 @mod.capture(rule="{self.function_key}")
 def function_key(m) -> str:
     "One function key"
     return m.function_key
+@mod.action_class
+class Actions:
+        def key_list(text: List[str]):
+            """Inserts a list of keys"""
+
+            for key in text:
+                actions.key(key)
