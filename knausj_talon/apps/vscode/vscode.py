@@ -342,10 +342,13 @@ class UserActions:
 
     def snippet_insert(text: str):
         """Inserts a snippet"""
-        actions.user.vscode_with_plugin_and_wait(
-            "editor.action.insertSnippet",
-            {"langId": actions.user.vscode_language_id(), "name": text},
-        )
+        actions.user.vscode("editor.action.insertSnippet")
+        actions.insert(text)
+        actions.key("enter")
+        # actions.user.vscode_with_plugin_and_wait(
+        #     "editor.action.insertSnippet",
+        #     {"langId": actions.user.vscode_language_id(), "name": text},
+        # )
 
     def snippet_create():
         """Triggers snippet creation"""
