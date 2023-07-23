@@ -26,26 +26,34 @@ mod.list("code_common_member_function", "Function to use in a dotted chain, eg .
 ctx.lists["user.code_common_member_function"] = {
     "catch": "catch",
     "concat": "concat",
-    "filter": "filter",
     "finally": "finally",
+    "join": "join",
+    "includes": "includes",
+    "pop": "pop",
+    "push": "push",
+    "slice": "slice",
+    "split": "split",
+    "substring": "substring",
+}
+
+mod.list(
+    "code_common_member_function_with_lambda",
+    "Function to use in a dotted chain that expects a lambda, eg .foo(() => ())",
+)
+
+ctx.lists["user.code_common_member_function_with_lambda"] = {
+    "filter": "filter",
     "find": "find",
     "flat map": "flatMap",
     "for each": "forEach",
-    "join": "join",
-    "includes": "includes",
     "map": "map",
-    "pop": "pop",
-    "push": "push",
-    "reduce": "reduce",
-    "slice": "slice",
     "some": "some",
-    "split": "split",
-    "substring": "substring",
     "then": "then",
 }
 
 ctx.lists["user.code_keyword"] = {
     "a sink": "async ",
+    "abstract": "abstract ",
     "await": "await ",
     "break": "break",
     "class": "class ",
@@ -55,7 +63,9 @@ ctx.lists["user.code_keyword"] = {
     "export": "export ",
     "false": "false",
     "function": "function ",
+    "get": "get ",
     "import": "import ",
+    "instance of": " instanceof ",
     "let": "let ",
     "new": "new ",
     "null": "null",
@@ -63,6 +73,7 @@ ctx.lists["user.code_keyword"] = {
     "protected": "protected ",
     "public": "public ",
     "return": "return ",
+    "static": "static ",
     "throw": "throw ",
     "true": "true",
     "try": "try ",
@@ -74,10 +85,13 @@ ctx.lists["user.code_keyword"] = {
 @ctx.action_class("user")
 class UserActions:
     def code_insert_is_not_null():
-        actions.auto_insert(" !== null")
+        actions.auto_insert(" != null")
 
     def code_insert_is_null():
-        actions.auto_insert(" === null")
+        actions.auto_insert(" == null")
+
+    def code_type_dictionary():
+        actions.user.insert_between("{", "}")
 
     def code_state_if():
         actions.user.insert_between("if (", ")")
@@ -187,10 +201,10 @@ class UserActions:
         actions.auto_insert(" %= ")
 
     def code_operator_equal():
-        actions.auto_insert(" == ")
+        actions.auto_insert(" === ")
 
     def code_operator_not_equal():
-        actions.auto_insert(" != ")
+        actions.auto_insert(" !== ")
 
     def code_operator_greater_than():
         actions.auto_insert(" > ")

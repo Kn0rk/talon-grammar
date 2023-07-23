@@ -27,34 +27,28 @@ settings():
     #    user.use_stdint_datatypes = 1
 
 # NOTE: migrated from generic, as they were only used here, though once cpp support is added, perhaps these should be migrated to a tag together with the commands below
-state include: insert("#include ")
-state include system: user.insert_between("#include <", ">")
-state include local: user.insert_between('#include "', '"')
-state type deaf: insert("typedef ")
-state type deaf struct:
+<user.operator> include: insert("#include ")
+<user.operator> include system: user.insert_between("#include <", ">")
+<user.operator> include local: user.insert_between('#include "', '"')
+<user.operator> type deaf: insert("typedef ")
+<user.operator> type deaf struct:
     insert("typedef struct")
     insert("{\n\n}")
     edit.up()
     key('tab')
 
 # XXX - create a preprocessor tag for these, as they will match cpp, etc
-state define: "#define "
-state (undefine | undeaf): "#undef "
-state if (define | deaf): "#ifdef "
-[state] define <user.text>$:
-    "#define {user.formatted_text(text, 'ALL_CAPS,SNAKE_CASE')}"
-[state] (undefine | undeaf) <user.text>$:
-    "#undef {user.formatted_text(text, 'ALL_CAPS,SNAKE_CASE')}"
-[state] if (define | deaf) <user.text>$:
-    "#ifdef {user.formatted_text(text, 'ALL_CAPS,SNAKE_CASE')}"
+<user.operator> define: "#define "
+<user.operator> undefine: "#undef "
+<user.operator> if define: "#ifdef "
 
 # XXX - preprocessor instead of pre?
-state pre if: "#if "
-state error: "#error "
-state pre else if: "#elif "
-state pre end: "#endif "
-state pragma: "#pragma "
-state default: "default:\nbreak;"
+<user.operator> pre if: "#if "
+<user.operator> error: "#error "
+<user.operator> pre else if: "#elif "
+<user.operator> pre end: "#endif "
+<user.operator> pragma: "#pragma "
+<user.operator> default: "default:\nbreak;"
 
 #control flow
 #best used with a push like command

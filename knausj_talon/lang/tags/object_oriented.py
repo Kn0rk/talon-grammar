@@ -8,6 +8,8 @@ mod.tag(
     desc="Tag for enabling basic object oriented programming commands (objects, classes, etc)",
 )
 
+setting_typename_formatter = mod.setting("code_typename_formatter", str)
+
 
 @mod.action_class
 class Actions:
@@ -16,6 +18,9 @@ class Actions:
 
     def code_self():
         """Inserts a reference to the current object (e.g., C++ "this" or Python's "self")"""
+
+    def code_interface(text: str):
+        """Inserts interface declaration"""
 
     def code_define_class():
         """Starts a class definition (e.g., Java's "class" keyword)"""

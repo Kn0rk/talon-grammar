@@ -25,16 +25,26 @@ MINIMUM_SLEEP_TIME_SECONDS = 0.0005
 did_emit_pre_phrase_signal = False
 
 mod = Module()
+
 ctx = Context()
 mac_ctx = Context()
+linux_ctx = Context()
 
 ctx.matches = r"""
 tag: user.command_client
 """
 mac_ctx.matches = r"""
 os: mac
-tag: user.command_client
+app: vscode
 """
+linux_ctx.matches = r"""
+os: linux
+app: vscode
+"""
+
+
+class TimeoutError(Exception):
+    pass
 
 
 class NotSet:
@@ -108,9 +118,9 @@ def handle_existing_request_file(path):
         raise Exception(
             "Found recent request file; another Talon process is probably running"
         )
-
-    print("Removing stale request file")
-    robust_unlink(path)
+    else:
+        print("Removing stale request file")
+        robust_unlink(path)
 
 
 def run_command(
@@ -118,6 +128,7 @@ def run_command(
     *args,
     wait_for_finish: bool = False,
     return_command_output: bool = False,
+    timeout: float = RPC_COMMAND_TIMEOUT_SECONDS,
 ):
     """Runs a command, using command server if available
 
@@ -176,7 +187,7 @@ def run_command(
     actions.user.trigger_command_server_command_execution()
 
     try:
-        decoded_contents = read_json_with_timeout(response_path)
+        decoded_contents = read_json_with_timeout(response_path, timeout)
     finally:
         # NB: We remove response file first because we want to do this while we
         # still own the request file
@@ -224,6 +235,7 @@ def robust_unlink(path: Path):
         path.unlink(missing_ok=True)
     except OSError as e:
         if hasattr(e, "winerror") and e.winerror == 32:
+
             graveyard_dir = get_communication_dir_path() / "graveyard"
             graveyard_dir.mkdir(parents=True, exist_ok=True)
             graveyard_path = graveyard_dir / str(uuid4())
@@ -236,7 +248,9 @@ def robust_unlink(path: Path):
             raise e
 
 
-def read_json_with_timeout(path: Path) -> Any:
+def read_json_with_timeout(
+    path: Path, timeout: float = RPC_COMMAND_TIMEOUT_SECONDS
+) -> Any:
     """Repeatedly tries to read a json object from the given path, waiting
     until there is a trailing new line indicating that the write is complete
 
@@ -249,7 +263,7 @@ def read_json_with_timeout(path: Path) -> Any:
     Returns:
         Any: The json-decoded contents of the file
     """
-    timeout_time = time.perf_counter() + RPC_COMMAND_TIMEOUT_SECONDS
+    timeout_time = time.perf_counter() + timeout
     sleep_time = MINIMUM_SLEEP_TIME_SECONDS
     while True:
         try:
@@ -266,7 +280,7 @@ def read_json_with_timeout(path: Path) -> Any:
         time_left = timeout_time - time.perf_counter()
 
         if time_left < 0:
-            raise Exception("Timed out waiting for response")
+            raise TimeoutError("Timed out waiting for response")
 
         # NB: We use minimum sleep time here to ensure that we don't spin with
         # small sleeps due to clock slip
@@ -359,6 +373,12 @@ class Actions:
 class MacUserActions:
     def trigger_command_server_command_execution():
         actions.key("cmd-shift-f17")
+
+
+@linux_ctx.action_class("user")
+class LinuxUserActions:
+    def trigger_command_server_command_execution():
+        actions.key("ctrl-shift-alt-p")
 
 
 @ctx.action_class("user")

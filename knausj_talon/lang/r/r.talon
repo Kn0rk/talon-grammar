@@ -22,7 +22,7 @@ settings():
     user.code_public_variable_formatter = "SNAKE_CASE"
 
 # NOTE: migrated from generic as it is only use here
-(op | is) in: " %in% "
+(<user.operator> | is) in: " %in% "
 
 toggle library: user.code_toggle_libraries()
 library <user.code_libraries>:
@@ -34,7 +34,7 @@ library <user.code_libraries>:
     key(end)
     " %>%"
     key(enter)
-state na: insert("NA")
+<user.operator> na: insert("NA")
 
 # TODO: migrate to function tag
 ^function define <user.text>$: user.code_private_function(text)

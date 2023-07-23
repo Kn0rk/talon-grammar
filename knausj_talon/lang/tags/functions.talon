@@ -23,4 +23,4 @@ is type <user.code_type>: user.code_insert_type_annotation(code_type)
 returns [type] <user.code_type>: user.code_insert_return_type(code_type)
 
 # for generic reference of types
-type <user.code_type>: insert(code_type)
+<user.operator> <user.code_type>: insert(code_type)

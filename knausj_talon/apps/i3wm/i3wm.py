@@ -44,6 +44,7 @@ class Actions:
     def i3wm_restart():
         """Restart the window manager"""
         subprocess.check_call(("i3-msg", "restart"))
+        
 
     def i3wm_layout(layout: Optional[str] = None):
         """Change to specified layout. Toggle split if unspecified."""
@@ -67,7 +68,7 @@ class Actions:
     def i3wm_launch():
         """Trigger the i3 launcher: ex rofi"""
         key = settings.get("user.i3_mod_key")
-        actions.key(f"{key}-d")
+        actions.key(f"{key}-space")
 
     def i3wm_shell():
         """Launch a shell"""
