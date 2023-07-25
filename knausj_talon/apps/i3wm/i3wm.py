@@ -52,6 +52,7 @@ class Actions:
             subprocess.check_call(("i3-msg", "layout", "toggle", "split"))
         else:
             subprocess.check_call(("i3-msg", "layout", layout))
+            
 
     def i3wm_fullscreen():
         """Fullscreen the current container"""

@@ -1,4 +1,5 @@
 tag: user.code_operators_assignment
+
 -
 tag(): user.code_operators_math
 tag(): user.code_operators_bitwise
@@ -24,7 +25,10 @@ tag(): user.code_operators_bitwise
 [(<user.operator> | logical | bitwise)] (right shift | shift right) equals:
     user.code_operator_bitwise_right_shift_assignment()
 
-dot: "."
-colon: ":"
+<user.operator> (arcs|args): user.insert_between("(",  ")")
 <user.operator> array: user.code_operator_subscript()
 <user.operator> scope: user.insert_between("{", "}")
+<user.operator> angle: user.insert_between("<", ">")
+complete angle: key('>')
+complete array: key('end enter ]')
+complete scope: key('end enter }')

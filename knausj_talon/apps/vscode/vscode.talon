@@ -30,24 +30,24 @@ please [<user.text>]:
     insert(user.text or "")
 
 # Sidebar
-bar explore: user.vscode("workbench.view.explorer")
-bar extensions: user.vscode("workbench.view.extensions")
-bar outline: user.vscode("outline.focus")
-bar run: user.vscode("workbench.view.debug")
-bar source: user.vscode("workbench.view.scm")
+pan explore: user.vscode("workbench.view.explorer")
+pan extensions: user.vscode("workbench.view.extensions")
+pan outline: user.vscode("outline.focus")
+pan run: user.vscode("workbench.view.debug")
+pan source: user.vscode("workbench.view.scm")
 list wreck: user.vscode("pr:github.focus")
-bar test: user.vscode("workbench.view.testing.focus")
+pan test: user.vscode("workbench.view.testing.focus")
 side dog: user.vscode("workbench.action.toggleSidebarVisibility")
 search next: user.vscode("search.action.focusNextSearchResult")
 search last: user.vscode("search.action.focusPreviousSearchResult")
-bar collapse: user.vscode("workbench.files.action.collapseExplorerFolders")
+pan collapse: user.vscode("workbench.files.action.collapseExplorerFolders")
 
 <user.show_list> symbol here [<user.text>] [halt]:
     user.vscode("workbench.action.gotoSymbol")
     sleep(50ms)
     user.insert_formatted(text or "", "NO_SPACES")
 
-<user.teleport> symbol here <user.text> [halt]:
+<user.teleport> symbol <user.text> [halt]:
     user.vscode("workbench.action.gotoSymbol")
     sleep(50ms)
     user.insert_formatted(text or "", "NO_SPACES")
@@ -72,7 +72,7 @@ symbol last: user.vscode("gotoNextPreviousMember.previousMember")
 symbol next: user.vscode("gotoNextPreviousMember.nextMember")
 
 # Panels
-panel control: user.vscode("workbench.panel.repl.view.focus")
+pan control: user.vscode("workbench.panel.repl.view.focus")
 panel output: user.vscode("workbench.panel.output.focus")
 problem show: user.vscode("workbench.panel.markers.view.focus")
 low dog: user.vscode("workbench.action.togglePanel")
@@ -179,7 +179,7 @@ disclose:
 disk gentle: edit.save()
 
 # Language Features
-suggest show: user.vscode("editor.action.triggerSuggest")
+suggest show: user.vscode("editor.action.triggerSuggest") 
 hint show: user.vscode("editor.action.triggerParameterHints")
 def show: user.vscode("editor.action.revealDefinition")
 definition peek: user.vscode("editor.action.peekDefinition")
@@ -540,7 +540,7 @@ stage on:
     sleep(100ms)
     key(enter)
 #breadcrumb
-select breadcrumb: user.vscode("breadcrumbs.focusAndSelect")
+show breadcrumb: user.vscode("breadcrumbs.focusAndSelect")
 # Use `alt-left` and `alt-right` to navigate the bread crumb
 
 replace here:
@@ -622,6 +622,7 @@ dock string <user.cursorless_target>:
     user.cursorless_command("editNewLineBefore", cursorless_target)
     "/**"
     sleep(350ms)
+    
     key(tab)
 
 dock short <user.cursorless_target>:
@@ -647,7 +648,7 @@ elm wrap <user.cursorless_target>:
     user.vscode("workbench.action.tasks.terminate")
     insert("Start tunnel")
     key(enter)
-line edit: key(ctrl-q e)
+line edit: key(alt-v)
 ^move recording [<user.text>] [halt]:
     user.vscode_with_plugin("workbench.action.tasks.runTask", "Move recorded video")
     sleep(650ms)
@@ -717,3 +718,10 @@ Github yes:
 Github no:
     insert("reject")
     key(enter)
+
+
+dot: 
+    insert(".")
+    user.vscode("editor.action.triggerSuggest")
+    
+colon: ":"
