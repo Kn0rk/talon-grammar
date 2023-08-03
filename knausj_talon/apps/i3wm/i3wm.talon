@@ -2,8 +2,8 @@
 os: linux
 tag: user.i3wm
 -
-window <user.number_key>: key("super-{user.number_key}")
-window move <user.number_key>: key("super-shift-{user.number_key}")
+window <user.number_key>:user.i3wm_switch_to_workspace(user.number_key)
+window move <user.number_key>: user.i3wm_move_to_workspace(user.number_key)
 window move <user.movement>: key("super-shift-{user.movement}")
 window <user.movement>: key("super-{user.movement}")
 

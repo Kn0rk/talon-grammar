@@ -1,0 +1,34 @@
+{
+	"tongueClock": {
+		"sounds": ["tsetse"],
+		"threshold": {
+			">power": 7,
+			">probability": 0.9
+		},
+		"throttle": {
+			"tongueClock": 0.17
+		}
+	},
+	"hiss": {
+        "sounds": ["hiss"],
+        "threshold": {
+            ">power": 15,
+            ">probability": 0.92
+        },
+        "graceperiod": 0.05,
+        "grace_threshold": {
+            ">power": 3
+        }
+    },
+	"woosh": {
+        "sounds": ["woosh"],
+        "threshold": {
+            ">power": 15,
+            ">probability": 0.92
+        },
+        "graceperiod": 0.05,
+        "grace_threshold": {
+            ">power": 3
+        }
+    }
+}

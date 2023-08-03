@@ -5,7 +5,7 @@ Spoken form, Cursorless identifier
 -six section, sectionLevelSix
 -three section, sectionLevelThree
 -two section, sectionLevelTwo
-arg, argumentOrParameter
+arg|argue, argumentOrParameter
 attribute, attribute
 block, paragraph
 branch, branch
@@ -13,7 +13,7 @@ call, functionCall
 callee, functionCallee
 cell, notebookCell
 chapter, chapter
-char, character
+char|character, character
 class, class
 class name, className
 comment, comment

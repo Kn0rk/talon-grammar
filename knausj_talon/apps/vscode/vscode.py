@@ -2,8 +2,12 @@ import json
 import re
 from os.path import expanduser
 from pathlib import Path
+from typing import Union
+from talon.grammar import Phrase
+from .command_client.command_client import run_command
 
 from talon import Context, Module, actions, app, clip
+from user.knausj_talon.core.text.formatters import format_phrase
 
 is_mac = app.platform == "mac"
 
@@ -492,6 +496,34 @@ class UserActions:
         actions.edit.cut()
         actions.insert(shell_command)
         actions.user.vscode("bashbook.cell.executeAndClear")
+    
+    # def insert_formatted(phrase: Union[str, Phrase], formatters: str):
+    #     """Inserts phrase rather than typing it"""
+    #     from .command_client.command_client import run_command
+    #     text=format_phrase(phrase, formatters)
+    #     try:
+    #         element_type = run_command('command-server.getFocusedElementType',timeout=0.3)
+    #     except Exception as e:
+    #         element_type = 'terminal'
+            
+    #     print(element_type)
+
+    #     if element_type  !=  'terminal':
+    #         with clip.revert():
+    #             clip.set_text(text)
+    #             actions.user.vscode("editor.action.clipboardPasteAction")
+    #             actions.sleep("150ms")
+    #     else:
+    #         actions.insert(text)
+
+            
+        
+
+        
+        
+
+
+        
 
     # find_and_replace.py support end
 

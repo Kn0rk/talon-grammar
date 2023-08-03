@@ -696,7 +696,7 @@ imports fix:
 search again: user.vscode("rerunSearchEditorSearch")
 preview markdown: user.vscode("markdown.showPreview")
 
-typescript restart: user.vscode("typescript.restartTsServer")
+typescript restart: user.vschelloode("typescript.restartTsServer")
 (close all editors | tab close all): user.vscode("workbench.action.closeAllGroups")
 
 hay Github <user.text>$:
@@ -712,12 +712,16 @@ hay Github <user.text> clap:
     sleep(100ms)
     insert("{text}")
     key(enter)
+Github options:    
+    user.vscode("github.copilot.generate")
+    
 Github yes:
     insert("accept")
     key(enter)
 Github no:
     insert("reject")
     key(enter)
+
 
 
 dot: 
