@@ -256,6 +256,22 @@ class Actions:
             {"kind": "source.addMissingImports", "apply": "first"},
         )
 
+    
+    def set_pannel_height(height: int):
+            
+            """Set the height of the pannel"""
+            responds = run_command("workbench.action.focusPanel",wait_for_finish=True,return_command_output=False,timeout=0.51)
+            print(f'command should have successfully completed by now {responds}')
+
+            for i in range(15):
+                actions.sleep("50ms")
+                responds = run_command("workbench.action.terminal.resizePaneDown",wait_for_finish=False,return_command_output=False)
+                print(f'command should have successfully completed by now {responds}')
+
+
+            for i in range(height):
+                run_command("workbench.action.terminal.resizePaneUp",wait_for_finish=False,return_command_output=False)
+
 
 @mac_ctx.action_class("user")
 class MacUserActions:
@@ -497,6 +513,7 @@ class UserActions:
         actions.insert(shell_command)
         actions.user.vscode("bashbook.cell.executeAndClear")
     
+
     # def insert_formatted(phrase: Union[str, Phrase], formatters: str):
     #     """Inserts phrase rather than typing it"""
     #     from .command_client.command_client import run_command
@@ -515,6 +532,7 @@ class UserActions:
     #             actions.sleep("150ms")
     #     else:
     #         actions.insert(text)
+
 
             
         
@@ -541,6 +559,7 @@ and code.language: python
 class PythonActions:
     def vscode_language_id() -> str:
         return "python"
+
 
 
 typescript_ctx = Context()

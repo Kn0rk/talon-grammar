@@ -729,3 +729,14 @@ dot:
     user.vscode("editor.action.triggerSuggest")
     
 colon: ":"
+
+half panel:
+    user.set_pannel_height(11)
+    
+
+quarter panel:
+    user.set_pannel_height(5)
+    
+
+no panel:
+    user.vscode("workbench.action.togglePanel")

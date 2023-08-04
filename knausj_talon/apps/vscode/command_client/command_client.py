@@ -171,6 +171,7 @@ def run_command(
         uuid=uuid,
     )
 
+    print(f'Writing request {request.to_dict()}')
     # First, write the request to the request file, which makes us the sole
     # owner because all other processes will try to open it with 'x'
     write_request(request, request_path)
@@ -185,7 +186,7 @@ def run_command(
     # keypresses, we can be sure that the active application instance will be the
     # one to execute the command.
     actions.user.trigger_command_server_command_execution()
-
+    print("Waiting for response")
     try:
         decoded_contents = read_json_with_timeout(response_path, timeout)
     finally:
@@ -193,7 +194,7 @@ def run_command(
         # still own the request file
         robust_unlink(response_path)
         robust_unlink(request_path)
-
+    print(f"Both files should be deleted response_path{response_path.exists()} request_path{request_path.exists()}")
     if decoded_contents["uuid"] != uuid:
         raise Exception("uuids did not match")
 
@@ -268,12 +269,13 @@ def read_json_with_timeout(
     while True:
         try:
             raw_text = path.read_text()
-
+            print(f"Read text: {repr(raw_text)}")
             if raw_text.endswith("\n"):
                 break
         except FileNotFoundError:
             # If not found, keep waiting
-            pass
+            print(f"ERROR:File not found at path {path}")
+
 
         actions.sleep(sleep_time)
 
