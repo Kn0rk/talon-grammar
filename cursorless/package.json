@@ -1,0 +1,60 @@
+{
+  "name": "cursorless",
+  "version": "0.1.0",
+  "description": "The root of the Cursorless monorepo",
+  "main": "index.js",
+  "scripts": {
+    "build": "pnpm -r build",
+    "clean": "pnpm -r clean",
+    "compile": "tsc --build",
+    "fix:eslint": "pnpm lint:ts --fix",
+    "fix:meta": "pnpm run meta-updater:base && pnpm -r exec prettier --write tsconfig.json package.json",
+    "fix:syncpack": "pnpm syncpack fix-mismatches",
+    "init-vscode-sandbox": "pnpm --filter=@cursorless/cursorless-vscode init-launch-sandbox",
+    "lint:meta": "pnpm run meta-updater:base --test",
+    "lint:ts": "eslint packages --ext ts,tsx",
+    "lint": "pnpm run lint:meta && syncpack list-mismatches && pnpm run lint:ts",
+    "meta-updater:base": "pnpm --filter=@cursorless/meta-updater build && meta-updater",
+    "preinstall": "npx only-allow pnpm",
+    "test-compile": "tsc --build",
+    "test": "pnpm compile && pnpm lint && pnpm -F '!test-harness' test && pnpm -F test-harness test",
+    "transform-recorded-tests": "tsx --conditions=cursorless:bundler packages/cursorless-engine/src/scripts/transformRecordedTests/index.ts",
+    "watch": "tsc --build --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@pnpm/meta-updater": "0.2.2",
+    "@types/node": "^16.11.3",
+    "@typescript-eslint/eslint-plugin": "^5.58.0",
+    "@typescript-eslint/parser": "^5.58.0",
+    "eslint": "^8.38.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-import-resolver-typescript": "3.5.5",
+    "eslint-plugin-import": "2.27.5",
+    "eslint-plugin-unused-imports": "^2.0.0",
+    "prettier": "3.0.0",
+    "syncpack": "9.8.4",
+    "tsx": "3.12.3",
+    "typescript": "^5.0.3"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@docusaurus/theme-search-algolia@2.3.1": "patches/@docusaurus__theme-search-algolia@2.3.1.patch"
+    },
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "@docusaurus/core",
+        "@docusaurus/mdx-loader",
+        "@docusaurus/plugin-content-blog",
+        "@docusaurus/preset-classic"
+      ],
+      "allowedVersions": {
+        "react": "18",
+        "react-dom": "18"
+      }
+    }
+  },
+  "packageManager": "pnpm@8.1.0"
+}
