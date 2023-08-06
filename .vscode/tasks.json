@@ -1,0 +1,84 @@
+// See https://go.microsoft.com/fwlink/?LinkId=733558
+// for the documentation about the tasks.json format
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build",
+      "dependsOn": ["Populate dist", "ESBuild", "TSBuild"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build extension only",
+      "dependsOn": ["Populate dist", "ESBuild"],
+      "group": "build"
+    },
+    {
+      "label": "ESBuild",
+      "type": "npm",
+      "script": "esbuild",
+      "path": "packages/cursorless-vscode",
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": "build"
+    },
+    {
+      "label": "TSBuild",
+      "type": "npm",
+      "script": "compile",
+      "problemMatcher": "$tsc",
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Populate dist",
+      "type": "npm",
+      "script": "populate-dist",
+      "path": "packages/cursorless-vscode",
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": "build"
+    },
+    {
+      "type": "npm",
+      "script": "watch",
+      "problemMatcher": "$tsc-watch",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Serve cursorless.org",
+      "type": "shell",
+      "command": "nx serve cursorless-org",
+      "options": {
+        "cwd": "cursorless-nx"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Install local",
+      "type": "shell",
+      "command": "vsce package -o bundle.vsix && code --install-extension bundle.vsix",
+      "presentation": {
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run pre commit",
+      "type": "shell",
+      "command": "pre-commit run",
+      "presentation": {}
+    }
+  ]
+}
