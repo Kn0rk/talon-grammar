@@ -1,5 +1,7 @@
-parrot(cluck):
+parrot(tongueClock):
 	print("cluck")
+
+blk
 
 #parrot(hiss):               user.noise_debounce("hiss", true)
 #parrot(hiss:stop):          user.noise_debounce("hiss", false)
