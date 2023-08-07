@@ -1,12 +1,12 @@
 {
-	"tongueClock": {
+	"tse": {
 		"sounds": ["tse"],
 		"threshold": {
 			">power": 9,
-			">probability": 0.99
+			">probability": 0.999
 		},
 		"throttle": {
-			"tongueClock": 0.17
+			"tse": 0.15
 		}
 	},
 	"hiss": {
