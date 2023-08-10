@@ -672,6 +672,7 @@ show extensions:
 run python: user.vscode("python.execInTerminal")
 
 run tests: user.vscode("testing.runAll")
+run current test: user.vscode("testing.runAtCursor")
 
 note make [<user.text>] [halt]:
     user.vscode("foam-vscode.create-note")

@@ -12,18 +12,18 @@
 	"hiss": {
         "sounds": ["hiss"],
         "threshold": {
-            ">power": 15,
+            ">power": 5,
             ">probability": 0.999
         },
         "graceperiod": 0.05,
         "grace_threshold": {
-            ">power": 3
+            ">power": 1
         }
     },
 	"woosh": {
         "sounds": ["wush"],
         "threshold": {
-            ">power": 15,
+            ">power": 3,
             ">probability": 0.999
         },
         "graceperiod": 0.05,

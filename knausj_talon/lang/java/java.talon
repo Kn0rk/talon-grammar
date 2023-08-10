@@ -24,7 +24,9 @@ settings():
     user.code_public_variable_formatter = "PRIVATE_CAMEL_CASE"
 
 state var: "var "
-
+make string: 
+    insert("\"\"")
+    key("left")
 # Types Commands
 boxed [type] {user.java_boxed_type}: insert(user.java_boxed_type + " ")
 

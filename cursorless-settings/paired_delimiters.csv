@@ -1,7 +1,7 @@
 Spoken form, Cursorless identifier
-box, squareBrackets
+array, squareBrackets
 curly, curlyBrackets
-diamond, angleBrackets
+angle, angleBrackets
 escaped box, escapedSquareBrackets
 escaped quad, escapedDoubleQuotes
 escaped round, escapedParentheses

@@ -260,9 +260,9 @@ class Actions:
     def set_pannel_height(height: int):
             
             """Set the height of the pannel"""
-            responds = run_command("workbench.action.focusPanel",wait_for_finish=True,return_command_output=False,timeout=0.51)
-            actions.sleep("500ms")
-            print(f'command should have successfully completed by now {responds}')
+            # responds = run_command("workbench.action.focusPanel",wait_for_finish=True,return_command_output=False,timeout=0.51)
+            # actions.sleep("500ms")
+            # print(f'command should have successfully completed by now {responds}')
 
             for i in range(15):
                 actions.sleep("50ms")
@@ -273,12 +273,12 @@ class Actions:
             for i in range(height):
                 run_command("workbench.action.terminal.resizePaneUp",wait_for_finish=False,return_command_output=False)
 
-    def trigger_highlight():
-        """Trigger highlight"""
-        actions.key("ctrl-f1")
+#     def trigger_highlight():
+#         """Trigger highlight"""
+#         actions.key("ctrl-f1")
 
-from talon import cron
-cron.interval("1s", actions.user.trigger_highlight)
+# from talon import cron
+# cron.interval("1s", actions.user.trigger_highlight)
 
 @mac_ctx.action_class("user")
 class MacUserActions:

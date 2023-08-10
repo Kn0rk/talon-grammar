@@ -23,33 +23,30 @@ class UserActions:
             actions.core.repeat_phrase()
 
     def noise_shush_start():
-        global shush_start
-        shush_start = time.perf_counter()
-        actions.user.mouse_scrolling("up")
-
+        actions.mouse_scroll(-3, by_lines=True)
+        
     def noise_shush_stop():
-        actions.user.abort_specific_phrases(
-            ["hash", "ssh"], shush_start, time.perf_counter()
-        )
-        actions.user.mouse_scroll_stop()
+        actions.mouse_scroll(0, by_lines=True)
 
     def noise_hiss_start():
-        actions.user.mouse_scrolling("down")
+        actions.mouse_scroll(3, by_lines=True)
 
     def noise_hiss_stop():
-        actions.user.mouse_scroll_stop()
+        print("mouse_scroll_stop")
+        actions.mouse_scroll(0, by_lines=True)
+
 
 
 @mod.action_class
 class Actions:
     def noise_debounce(name: str, active: bool):
         """Start or stop continuous noise using debounce"""
-        if name not in state:
-            state[name] = active
-            cron_jobs[name] = cron.after("80ms", lambda: callback(name))
-        elif state[name] != active:
-            cron.cancel(cron_jobs[name])
-            state.pop(name)
+        if active:
+            state[name] = time.time()
+            callbacks[name](active)
+        
+        cron_jobs[name] = cron.after("30ms", lambda: check_stop_condition(name))
+        
 
     def noise_pop():
         """Noise pop"""
@@ -75,9 +72,13 @@ def last_command_is_sleep():
     return cmd.script.code.startswith("user.talon_sleep()")
 
 
-def callback(name: str):
-    active = state.pop(name)
-    callbacks[name](active)
+def check_stop_condition(name: str):
+    time_since_start = time.time() - state[name]
+    if time_since_start > 0.1:
+        callbacks[name](False)
+        cron_jobs[name] = None
+    else:
+        cron_jobs[name] = cron.after("30ms", lambda: check_stop_condition(name))
 
 
 def on_shush(active: bool):
