@@ -20,6 +20,16 @@ class Actions:
         actions.speech.disable()
         actions.user.engine_sleep()
 
+    def sleep_engine():
+        """Sleeps talon and hides everything"""
+        actions.user.switcher_hide_running()
+        actions.user.maybe_hide_history()
+        actions.user.homophones_hide()
+        actions.user.help_hide()
+        #actions.user.mouse_sleep()
+        actions.speech.disable()
+        actions.user.engine_sleep()
+
     def wake_all():
         """Wakes talon and shows everything"""
         #actions.user.cancel_in_flight_phrase()

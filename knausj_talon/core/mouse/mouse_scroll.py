@@ -94,7 +94,6 @@ class Actions:
         _, gaze_origin_y = actions.user.mouse_pos()
         gaze_job = cron.interval("16ms", scroll_gaze_helper)
 
-
 def scroll_continuous_helper():
     acceleration_speed = 1 + min((time.perf_counter() - scroll_ts) / 0.5, 4)
     y = (

@@ -349,7 +349,10 @@ class Actions:
         """Open a menu of running apps to switch to"""
         if app.platform == "windows":
             actions.key("alt-ctrl-tab")
+        elif app.platform == "linux":
+            actions.key("win")
         else:
+
             print("Persistent Switcher Menu not supported on " + app.platform)
 
     def switcher_toggle_running():

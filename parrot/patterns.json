@@ -9,6 +9,16 @@
 			"tse": 0.15
 		}
 	},
+    "click": {
+        "sounds": ["click"],
+        "threshold": {
+            ">power": 9,
+            ">probability": 0.999
+        },
+        "throttle": {
+            "click": 0.15
+        }
+    },
 	"hiss": {
         "sounds": ["hiss"],
         "threshold": {

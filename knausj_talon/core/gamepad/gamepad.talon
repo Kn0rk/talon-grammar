@@ -1,4 +1,4 @@
-gamepad(dpad_up):           print("dpad_up")
+...gamepad(dpad_up):           print("dpad_up")
 gamepad(dpad_down):         print("dpad_down")
 gamepad(dpad_left):         print("dpad_left")
 gamepad(dpad_right):        print("dpad_right")
@@ -20,7 +20,7 @@ gamepad(r2:change):         print("r2/Right trigger {value}")
 gamepad(l3):                print("l3/Left stick click")
 gamepad(r3):                print("r3/Right stick click")
 
-gamepad(left_xy):           print("left_xy: {x}, {y}")
+#gamepad(left_xy):           action.mous
 gamepad(right_xy):          print("right_xy: {x}, {y}")
 
 gamepad(a0):                print("a0")
