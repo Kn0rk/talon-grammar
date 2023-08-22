@@ -1,4 +1,4 @@
-...gamepad(dpad_up):           print("dpad_up")
+gamepad(dpad_up):           print("dpad_up")
 gamepad(dpad_down):         print("dpad_down")
 gamepad(dpad_left):         print("dpad_left")
 gamepad(dpad_right):        print("dpad_right")
