@@ -1,1 +1,0 @@
-export { TreeSitterQuery } from "./TreeSitterQuery";
