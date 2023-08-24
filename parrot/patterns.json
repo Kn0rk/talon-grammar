@@ -1,0 +1,44 @@
+{
+	"tse": {
+		"sounds": ["tse"],
+		"threshold": {
+			">power": 9,
+			">probability": 0.999
+		},
+		"throttle": {
+			"tse": 0.15
+		}
+	},
+    "click": {
+        "sounds": ["click"],
+        "threshold": {
+            ">power": 9,
+            ">probability": 0.999
+        },
+        "throttle": {
+            "click": 0.15
+        }
+    },
+	"hiss": {
+        "sounds": ["hiss"],
+        "threshold": {
+            ">power": 5,
+            ">probability": 0.999
+        },
+        "graceperiod": 0.05,
+        "grace_threshold": {
+            ">power": 1
+        }
+    },
+	"woosh": {
+        "sounds": ["wush"],
+        "threshold": {
+            ">power": 3,
+            ">probability": 0.999
+        },
+        "graceperiod": 0.05,
+        "grace_threshold": {
+            ">power": 3
+        }
+    }
+}
