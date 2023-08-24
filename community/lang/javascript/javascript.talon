@@ -25,29 +25,33 @@ settings():
     user.code_protected_variable_formatter = "PRIVATE_CAMEL_CASE"
     user.code_public_variable_formatter = "PRIVATE_CAMEL_CASE"
 
-(op | is) strict equal: " === "
-(op | is) strict not equal: " !== "
-op null else: " ?? "
+is loose equal: " == "
+is not loose equal: " != "
+<user.operator> fallback: " ?? "
+<user.operator> quote var: user.insert_between("${", "}")
+<user.operator> spread: "..."
 
-state const: "const "
-
-state let: "let "
-
-state var: "var "
-
-state export: "export "
-
-state async: "async "
-
-state await: "await "
-
-dot {user.code_common_member_function}:
+chain length: ".length"
+chain {user.code_common_member_function}:
     user.insert_between(".{code_common_member_function}(", ")")
+chain {user.code_common_member_function_with_lambda}:
+    user.cursorless_insert_snippet(".{code_common_member_function_with_lambda}(($args) => ($value))")
+chain {user.code_common_member_function_with_lambda} block:
+    user.cursorless_insert_snippet(".{code_common_member_function_with_lambda}(($args) => {{\n\t$body\n}})")
+chain {user.code_common_member_function_with_lambda} short:
+    user.insert_between(".{code_common_member_function_with_lambda}(", ")")
+chain {user.code_common_member_function_with_lambda} <phrase>:
+    name = user.formatted_text(phrase, "PRIVATE_CAMEL_CASE")
+    user.cursorless_insert_snippet(".{code_common_member_function_with_lambda}(({name}) => ($value))")
+chain {user.code_common_member_function_with_lambda} block <phrase>:
+    name = user.formatted_text(phrase, "PRIVATE_CAMEL_CASE")
+    user.cursorless_insert_snippet(".{code_common_member_function_with_lambda}(({name}) => {{\n\t$body\n}})")
 
-state map: app.notify('ERROR: Command deprecated; please use "dot map"')
-state filter: app.notify('ERROR: Command deprecated; please use "dot filter"')
-state reduce: app.notify('ERROR: Command deprecated; please use "dot reduce"')
-
-state spread: "..."
+chain reduce:
+    user.cursorless_insert_snippet(".reduce(\n\t(accumulator, value) => ($value),\n\t$initialValue\n)")
+chain reduce block:
+    user.cursorless_insert_snippet(".reduce(\n\t(accumulator, value) => {{\n\t\t$body\n\t}},\n\t$initialValue\n)")
+chain reduce short:
+    user.cursorless_insert_snippet(".reduce($function, $initialValue)")
 
 from import: user.insert_between(' from  "', '"')

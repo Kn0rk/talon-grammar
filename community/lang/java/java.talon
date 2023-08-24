@@ -12,7 +12,7 @@ tag(): user.code_libraries
 tag(): user.code_operators_array
 tag(): user.code_operators_assignment
 tag(): user.code_operators_bitwise
-tag(): user.code_operators_lambda
+tag(): user.code_operators_lambdaman
 tag(): user.code_operators_math
 
 settings():
@@ -24,7 +24,9 @@ settings():
     user.code_public_variable_formatter = "PRIVATE_CAMEL_CASE"
 
 state var: "var "
-
+make string: 
+    insert("\"\"")
+    key("left")
 # Types Commands
 boxed [type] {user.java_boxed_type}: insert(user.java_boxed_type + " ")
 
@@ -36,8 +38,7 @@ type {user.code_type} array:
     insert(user.code_type)
     user.code_operator_subscript()
 
-[state] {user.java_modifier}: insert(user.java_modifier + " ")
+[<user.operator>] {user.java_modifier}: insert(user.java_modifier + " ")
 
-op array: user.code_operator_subscript()
-
-op new: insert("new ")
+<user.operator> new: insert("new ")
+finish: key("end ;")

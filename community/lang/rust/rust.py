@@ -11,6 +11,9 @@ mod.list("code_trait", desc="List of traits for active language")
 
 @mod.action_class
 class Actions:
+    def code_operator_structure_dereference():
+        """Inserts a reference operator"""
+
     def code_state_implements():
         """Inserts implements block, positioning the cursor appropriately"""
 
@@ -236,6 +239,7 @@ ctx.lists["user.code_trait"] = all_traits
 
 @ctx.action_class("user")
 class UserActions:
+
     # tag: comment_line
 
     def code_comment_line_prefix():
@@ -366,7 +370,7 @@ class UserActions:
     # tag: libraries_gui
 
     def code_insert_library(text: str, selection: str):
-        actions.user.paste(f"use {text}")
+        actions.user.paste(f"use {selection}")
 
     # tag: operators_array
 

@@ -9,7 +9,7 @@ tag: user.python
 """
 ctx.lists["user.code_common_function"] = {
     "enumerate": "enumerate",
-    "integer": "int",
+    "int": "int",
     "length": "len",
     "list": "list",
     "print": "print",
@@ -18,6 +18,9 @@ ctx.lists["user.code_common_function"] = {
     "split": "split",
     "string": "str",
     "update": "update",
+    "max": "max",
+    "min": "min",
+    "get at her": "getattr",
 }
 
 """a set of fields used in python docstrings that will follow the
@@ -41,22 +44,38 @@ mod.list("python_docstring_fields", desc="python docstring fields")
 ctx.lists["user.python_docstring_fields"] = docstring_fields
 
 ctx.lists["user.code_type"] = {
-    "boolean": "bool",
-    "integer": "int",
+    "bool": "bool",
+    "int": "int",
+    "numb": "int",
     "string": "str",
     "none": "None",
-    "dick": "Dict",
+    "dick": "dict",
     "float": "float",
     "any": "Any",
-    "tuple": "Tuple",
-    "union": "UnionAny",
+    "tuple": "tuple",
+    "union": "Union",
     "iterable": "Iterable",
     "vector": "Vector",
     "bytes": "bytes",
     "sequence": "Sequence",
-    "callable": "Callable",
-    "list": "List",
+    "callable": "callable",
+    "list": "list",
     "no return": "NoReturn",
+    "path": "Path",
+}
+
+ctx.lists["user.code_keyword"] = {
+    "break": "break",
+    "continue": "continue",
+    "class": "class ",
+    "return": "return ",
+    "import": "import ",
+    "null": "None",
+    "none": "None",
+    "true": "True",
+    "false": "False",
+    "yield": "yield ",
+    "from": "from ",
 }
 
 ctx.lists["user.code_keyword"] = {
@@ -213,12 +232,6 @@ class UserActions:
 
     def code_operator_or():
         actions.auto_insert(" or ")
-
-    def code_operator_in():
-        actions.auto_insert(" in ")
-
-    def code_operator_not_in():
-        actions.auto_insert(" not in ")
 
     def code_operator_bitwise_and():
         actions.auto_insert(" & ")

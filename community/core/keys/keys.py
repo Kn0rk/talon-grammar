@@ -1,3 +1,5 @@
+from typing import List
+
 from talon import Context, Module, actions, app
 
 from ..user_settings import get_list_from_csv
@@ -8,6 +10,7 @@ def setup_default_alphabet():
 
     no need to modify this here, change your alphabet using alphabet.csv"""
     initial_default_alphabet = "air bat cap drum each fine gust harp sit jury crunch look made near odd pit quench red sun trap urge vest whale plex yank zip".split()
+    initial_default_alphabet = "Alfa Bravo Charlie Delta Echo Foxtrot Golf Hotel India Juliett Kilo Lima Mike November Oscar Papa Quebec Romeo Sun Tiny Uniform Victor Whiskey Xray Yankee Zulu".split()
     initial_letters_string = "abcdefghijklmnopqrstuvwxyz"
     initial_default_alphabet_dict = dict(
         zip(initial_default_alphabet, initial_letters_string)
@@ -265,8 +268,72 @@ ctx.lists["self.special_key"] = special_keys
 ctx.lists["self.function_key"] = {
     f"F {name}": f"f{i}" for i, name in enumerate(f_digits, start=1)
 }
+mod.list("movement", desc="All movement basics")
+ctx.lists["self.movement"] = {
+    "down": "down",
+    "left": "left",
+    "right": "right",
+    "up": "up",
+    "ending": "end",
+    "home": "home",
+    "page up": "pageup",
+    "page down": "pagedown",
+    "wipe": "backspace",
+    "slap": "enter",
+    "clap": "enter",
+    "tabby": "tab",
+    "tab": "tab",
+    "space": "space",
+    "spacy": "space",
+    "void": "space",
+    "delete": "delete",
+}
+
+mod.list("compound_movement", desc="All movement basics")
+ctx.lists["self.compound_movement"] = {
+    "east": "ctrl-right",
+    "west": "ctrl-left",
+    "bump": "ctrl-delete",
+    "pimp": "ctrl-backspace",
+
+}
+@mod.capture(rule="{self.modifier_key}+")
+def modifiers(m) -> str:
+    "One or more modifier keys"
+    return "-".join(m.modifier_key_list)
 
 
+@mod.capture(rule="( {self.movement} | {self.compound_movement})")
+def movement(m) -> str:
+    "Any key that moves The cursor."
+    return m[0]
+
+
+@mod.capture(rule=" {self.modifier_key}+ [down] ((<self.movement> [<self.number_key>])+ | (<self.letter>+) )")
+def modified_movements(m) -> str:
+    "Allows most keys that move the cursor without adding content to be modified by ctrl/alt/shift/win"
+    keys = str(m).split()
+    mods = None
+    key_list = []
+    for key in keys:
+        if key in modifier_keys.values():
+            mods = mods + "-" + key if mods else key
+        elif key.isnumeric():
+            num = int(key)
+            key_list.extend([key_list[-1] for i in range(num - 1)])
+        else:
+            if mods:
+                key_list.append(mods + "-" + key)
+            else:
+                key_list.append(key)
+    result = " ".join(key_list)
+    return result
+
+
+@mod.capture(rule="<self.symbol_key>|<self.letter>")
+def alphasymbolic_key(m) -> str:
+    "One alphabetical or symbolic key"
+    return m[0]
 @mod.action_class
 class Actions:
     def move_cursor(s: str):
@@ -276,3 +343,9 @@ class Actions:
                 getattr(actions.edit, d)()
             else:
                 raise RuntimeError(f"invalid arrow key: {d}")
+
+    def key_list(text: List[str]):
+        """Inserts a list of keys"""
+
+        for key in text:
+            actions.key(key)

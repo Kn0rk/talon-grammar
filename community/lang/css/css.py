@@ -33,21 +33,21 @@ global_ctx.lists["self.css_unit"] = {
     "fraction": "fr",
 }
 
-global_ctx.lists["self.css_at_rule"] = {
+global_ctx.lists["self.css_at_rule"] = [
     # regular
-    "charset": "charset",
-    "import": "import",
-    "namespace": "namespace",
+    "charset",
+    "import",
+    "namespace",
     # conditional group
-    "media": "media",
-    "supports": "supports",
+    "media",
+    "supports",
     # other nested
-    "page": "page",
-    "font face": "font-face",
-    "keyframes": "keyframes",
+    "page",
+    "font-face",
+    "keyframes",
     # CSS Modules
-    "value": "value",
-}
+    "value",
+]
 
 global_ctx.lists["self.css_global_value"] = ["initial", "inherit", "unset", "revert"]
 

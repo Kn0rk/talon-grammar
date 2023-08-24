@@ -1,4 +1,13 @@
-from talon import Context, Module, actions, app
+import json
+import re
+from os.path import expanduser
+from pathlib import Path
+from typing import Union
+from talon.grammar import Phrase
+from .command_client.command_client import run_command
+
+from talon import Context, Module, actions, app, clip
+from user.knausj_talon.core.text.formatters import format_phrase
 
 is_mac = app.platform == "mac"
 
@@ -49,6 +58,16 @@ mac_ctx.matches = r"""
 os: mac
 app: vscode
 """
+
+mod.list("branchless_command", "A command to use with branchless that expects a commit")
+
+ctx.lists["user.branchless_command"] = {
+    "git push stack this": "Git push commit stack",
+    "git sink this": "Git sync commit",
+    "git ditch branch this": "Git delete branch",
+    "git ditch branch this force": "Git delete branch force",
+    "pop branch this": "Git switch to commit",
+}
 
 
 @ctx.action_class("app")
@@ -112,17 +131,28 @@ class EditActions:
     def line_clone():
         actions.key("shift-alt-down")
 
-    def line_insert_down():
-        actions.user.vscode("editor.action.insertLineAfter")
-
-    def line_insert_up():
-        actions.user.vscode("editor.action.insertLineBefore")
-
     def jump_line(n: int):
         actions.user.vscode("workbench.action.gotoLine")
         actions.insert(str(n))
         actions.key("enter")
         actions.edit.line_start()
+
+    def line_insert_down():
+        actions.user.vscode_and_wait("editor.action.insertLineAfter")
+
+    def line_insert_up():
+        actions.user.vscode_and_wait("editor.action.insertLineBefore")
+
+    def save():
+        actions.key("cmd-s")
+        actions.sleep("50ms")
+
+
+@mac_ctx.action_class("edit")
+class EditActions:
+    def select_line(n: int = None):
+        # NB: this prevents opening a split when you're quick picking a file
+        actions.key("ctrl-e cmd-shift-left")
 
 
 @ctx.action_class("win")
@@ -150,10 +180,105 @@ class Actions:
         """Activate a terminal by number"""
         actions.user.vscode(f"workbench.action.terminal.focusAtIndex{number}")
 
+    def change_setting(setting_name: str, setting_value: any):
+        """
+        Changes a VSCode setting by name
+
+        Args:
+            setting_name (str): The name of the setting
+            setting_value (any): The new value.  Will be JSON encoded
+        """
+        original_settings_path = Path(
+            expanduser("~/Library/Application Support/Code/User/settings.json")
+        )
+        original_settings = original_settings_path.read_text()
+        regex = re.compile(rf'^(\s*)"{setting_name}": .*[^,](,?)$', re.MULTILINE)
+        new_settings = regex.sub(
+            rf'\1"{setting_name}": {json.dumps(setting_value)}\2', original_settings
+        )
+        original_settings_path.write_text(new_settings)
+
+    def set_zoom_level(level: int):
+        """Set zoom level"""
+        actions.user.change_setting("window.zoomLevel", level)
+
     def command_palette():
         """Show command palette"""
         actions.key("ctrl-shift-p")
 
+    def vscode_language_id() -> str:
+        """Returns the vscode language id of the current programming language"""
+
+    def copy_command_id():
+        """Copy the command id of the focused menu item"""
+        actions.key("tab:2 enter")
+        actions.sleep("750ms")
+        json_text = actions.edit.selected_text()
+        command_id = json.loads(json_text)["command"]
+        actions.app.tab_close()
+        clip.set_text(command_id)
+
+    def git_commit(text: str):
+        """Git commit"""
+        actions.user.vscode("git.commitStaged")
+        actions.sleep("500ms")
+        actions.user.insert_formatted(text, "CAPITALIZE_FIRST_WORD")
+
+    def cursorless_record_navigation_test():
+        """Run cursorless Record navigation test"""
+        actions.user.vscode_with_plugin(
+            "cursorless.recordTestCase", {"isHatTokenMapTest": True}
+        )
+
+    def cursorless_record_error_test():
+        """Record cursorless record error test"""
+        actions.user.vscode_with_plugin(
+            "cursorless.recordTestCase", {"recordErrors": True}
+        )
+
+    def cursorless_record_highlights_test():
+        """Record cursorless record error test"""
+        actions.user.vscode_with_plugin(
+            "cursorless.recordTestCase", {"isDecorationsTest": True}
+        )
+
+    def cursorless_record_that_mark_test():
+        """Record cursorless record error test"""
+        actions.user.vscode_with_plugin(
+            "cursorless.recordTestCase", {"captureFinalThatMark": True}
+        )
+
+    # From https://github.com/AndreasArvidsson/andreas-talon/blob/1f48ae59452004d2266aad908b301f93b262f875/apps/vscode/vscode.py#L382-L387
+    def vscode_add_missing_imports():
+        """Add all missing imports"""
+        actions.user.vscode_with_plugin(
+            "editor.action.sourceAction",
+            {"kind": "source.addMissingImports", "apply": "first"},
+        )
+
+    
+    def set_pannel_height(height: int):
+            
+            """Set the height of the pannel"""
+            # responds = run_command("workbench.action.focusPanel",wait_for_finish=True,return_command_output=False,timeout=0.51)
+            # actions.sleep("500ms")
+            # print(f'command should have successfully completed by now {responds}')
+
+            for i in range(15):
+                actions.sleep("50ms")
+                responds = run_command("workbench.action.terminal.resizePaneDown",wait_for_finish=False,return_command_output=False)
+                print(f'command should have successfully completed by now {responds}')
+
+
+            for i in range(height):
+                run_command("workbench.action.terminal.resizePaneUp",wait_for_finish=False,return_command_output=False)
+
+#     def trigger_highlight():
+#         """Trigger highlight"""
+#         actions.key("ctrl-f1")
+
+# from talon import cron
+# cron.interval("1s", actions.user.trigger_highlight)
 
 @mac_ctx.action_class("user")
 class MacUserActions:
@@ -183,7 +308,7 @@ class UserActions:
         actions.user.vscode("workbench.action.focusLeftGroup")
 
     def split_next():
-        actions.user.vscode_and_wait("workbench.action.focusRightGroup")
+        actions.user.vscode_and_wait("workbench.action.navigateEditorGroups")
 
     def split_window_down():
         actions.user.vscode("workbench.action.moveEditorToBelowGroup")
@@ -247,6 +372,10 @@ class UserActions:
         actions.user.vscode("editor.action.insertSnippet")
         actions.insert(text)
         actions.key("enter")
+        # actions.user.vscode_with_plugin_and_wait(
+        #     "editor.action.insertSnippet",
+        #     {"langId": actions.user.vscode_language_id(), "name": text},
+        # )
 
     def snippet_create():
         """Triggers snippet creation"""
@@ -376,3 +505,98 @@ class UserActions:
         actions.edit.find(text)
         actions.sleep("100ms")
         actions.key("esc")
+
+    def select_next_token():
+        actions.edit.find("")
+        actions.key("enter")
+        actions.key("enter")
+        actions.key("esc")
+
+    def run_shell_command(shell_command: str):
+        """Run a shell command"""
+        # FIXME: Only do it this way if we are in a bash book
+        actions.edit.select_all()
+        actions.edit.cut()
+        actions.insert(shell_command)
+        actions.user.vscode("bashbook.cell.executeAndClear")
+    
+
+    # def insert_formatted(phrase: Union[str, Phrase], formatters: str):
+    #     """Inserts phrase rather than typing it"""
+    #     from .command_client.command_client import run_command
+    #     text=format_phrase(phrase, formatters)
+    #     try:
+    #         element_type = run_command('command-server.getFocusedElementType',timeout=0.3)
+    #     except Exception as e:
+    #         element_type = 'terminal'
+            
+    #     print(element_type)
+
+    #     if element_type  !=  'terminal':
+    #         with clip.revert():
+    #             clip.set_text(text)
+    #             actions.user.vscode("editor.action.clipboardPasteAction")
+    #             actions.sleep("150ms")
+    #     else:
+    #         actions.insert(text)
+
+
+            
+        
+
+        
+        
+
+
+        
+
+    # find_and_replace.py support end
+
+
+python_ctx = Context()
+python_ctx.matches = r"""
+app: vscode
+mode: user.python
+mode: user.auto_lang
+and code.language: python
+"""
+
+
+@python_ctx.action_class("user")
+class PythonActions:
+    def vscode_language_id() -> str:
+        return "python"
+
+
+
+typescript_ctx = Context()
+typescript_ctx.matches = r"""
+app: vscode
+mode: user.typescript
+mode: user.auto_lang
+and code.language: typescript
+"""
+
+
+@typescript_ctx.action_class("user")
+class TypescriptActions:
+    def vscode_language_id() -> str:
+        return "typescript"
+
+
+mod.list("language_id", "language id")
+ctx.lists["user.language_id"] = {
+    "bash": "bash",
+    "html": "html",
+    "jason": "json",
+    "java": "java",
+    "lay tech": "tex",
+    "markdown": "markdown",
+    "python": "python",
+    "ruby": "ruby",
+    "rust": "rust",
+    "scala": "scala",
+    "text": "plaintext",
+    "typescript": "typescript",
+    "javascript": "javascript",
+}
